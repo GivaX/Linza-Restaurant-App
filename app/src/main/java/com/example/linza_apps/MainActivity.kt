@@ -13,17 +13,14 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
-import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -38,9 +35,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.*
-
-import com.example.compose.AppTheme
-import com.example.compose.outlineLight
+import com.example.linza_apps.ui.theme.AppTheme
+import com.example.linza_apps.navigation.AppNavigation
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -50,19 +46,24 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             AppTheme {
-                Dashboard()
+                LinzaApp()
             }
         }
     }
 }
 
-@Preview
+@Composable
+fun LinzaApp(modifier: Modifier = Modifier) {
+    AppNavigation()
+}
+
+/*@Preview
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun Dashboard(modifier: Modifier = Modifier) {
     Scaffold(
         topBar = {
-            Column() {
+            Column {
                 CenterAlignedTopAppBar(
                     title = {
                         Text(
@@ -178,23 +179,4 @@ fun ManageDriversButton(modifier: Modifier = Modifier) {
 }
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+*/
