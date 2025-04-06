@@ -145,36 +145,3 @@ fun getCurrentTime(): String {
     val sdf = SimpleDateFormat("dd/MM/yyyy\nhh:mm:ss a", Locale.getDefault())
     return sdf.format(Date())
 }
-
-@Preview
-@Composable
-fun CustomSearchBar(modifier: Modifier = Modifier) {
-    var text by remember { mutableStateOf("") }
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(10.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        OutlinedTextField(
-            value = text,
-            onValueChange = { text = it },
-            label = { Text("Customer LookUp") },
-            leadingIcon = {
-                Icon(
-                    imageVector = Icons.Default.Search,
-                    contentDescription = "Search Icon"
-                )
-            },
-            modifier = Modifier
-                .weight(1f)
-                .padding(end = 8.dp)
-        )
-        Button(onClick = {
-            // Process the text
-        }) {
-            Text("Search")
-        }
-    }
-}

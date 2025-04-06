@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "76477963942",
+    "project_id": "linza-restaurant",
+    "storage_bucket": "linza-restaurant.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:76477963942:android:cc1b1715ec91eed737de67",
+        "android_client_info": {
+          "package_name": "com.example.linza_apps"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAugruy6PaFlOHXtvBHPaM87i3fTLXdhoU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
