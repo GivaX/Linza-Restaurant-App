@@ -1,6 +1,7 @@
 package com.example.linza_apps.ui.screens
 
 import android.icu.text.StringSearch
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -56,9 +57,30 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.*
 import androidx.navigation.NavController
 import com.example.linza_apps.R
+import com.example.linza_apps.navigation.Screen
 import com.example.linza_apps.ui.components.*
+import com.google.firebase.firestore.firestore
+import com.google.firebase.Firebase
 import kotlin.math.exp
 
+
+fun addCustomer(modifier: Modifier = Modifier) {
+    val db = Firebase.firestore
+
+    val customer = hashMapOf(
+        "name" to "Ransika Perera",
+        "phone" to "56456498874",
+        "address" to "Colombo"
+    )
+
+    db.collection("Customers").add(customer)
+        .addOnSuccessListener { documentReference ->
+            Log.d("Firestore", "Customer added w ID: ${documentReference.id}")
+        }
+        .addOnFailureListener { e ->
+            Log.w("Firestore", "Error adding customer", e)
+        }
+}
 
 @Composable
 fun NewOrderScreen(navController: NavController, modifier: Modifier = Modifier) {
@@ -72,13 +94,13 @@ fun NewOrderScreen(navController: NavController, modifier: Modifier = Modifier) 
         },
         //contentWindowInsets = WindowInsets(0, 0, 0, 0),
         content = { innerPadding ->
-            NewOrderContent(Modifier.padding(innerPadding))
+            NewOrderContent(navController, Modifier.padding(innerPadding))
         }
     )
 }
 
 @Composable
-fun NewOrderContent(modifier: Modifier = Modifier) {
+fun NewOrderContent(navController: NavController, modifier: Modifier = Modifier) {
     Box(modifier.fillMaxSize()) {
         Image(
             painter = painterResource(id = R.drawable.linza_background), // Replace with your PNG
@@ -91,7 +113,7 @@ fun NewOrderContent(modifier: Modifier = Modifier) {
         )
         Column {
             DateTimeDisplay()
-            CustomerLookup()
+            CustomerLookup(navController)
         }
     }
 }
@@ -155,9 +177,8 @@ fun SearchBarBox(
 
 
 
-@Preview
 @Composable
-fun CustomerLookup(modifier: Modifier = Modifier) {
+fun CustomerLookup(navController: NavController, modifier: Modifier = Modifier) {
     val textFieldState = rememberTextFieldState()
     val items = listOf(
         "customer 1", "sldkmfklsd", "metorsdkfs"
@@ -192,7 +213,9 @@ fun CustomerLookup(modifier: Modifier = Modifier) {
             }
         }*/
         ExtendedFloatingActionButton(
-            onClick = { },
+            onClick = {
+                navController.navigate(Screen.AddCustomers.route)
+            },
             icon = { Icon(Icons.Filled.Add, "Add") },
             text = { Text("Add New Customer") },
             modifier = Modifier

@@ -3,6 +3,7 @@ package com.example.linza_apps
 
 import kotlinx.coroutines.*
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Image
@@ -37,6 +38,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.*
 import com.example.linza_apps.ui.theme.AppTheme
 import com.example.linza_apps.navigation.AppNavigation
+import com.google.firebase.FirebaseApp
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -44,6 +46,7 @@ import java.util.Locale
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        FirebaseApp.initializeApp(this)
         setContent {
             AppTheme {
                 LinzaApp()

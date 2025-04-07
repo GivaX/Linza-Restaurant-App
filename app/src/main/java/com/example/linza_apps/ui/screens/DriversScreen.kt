@@ -30,7 +30,7 @@ fun DriverScreen(navController: NavController, modifier: Modifier = Modifier) {
         },
         //contentWindowInsets = WindowInsets(0, 0, 0, 0),
         content = { innerPadding ->
-            NewOrderContent(Modifier.padding(innerPadding))
+            NewOrderContent(navController, Modifier.padding(innerPadding))
         }
     )
 }

@@ -5,6 +5,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.linza_apps.ui.screens.AddCustomerScreen
 import com.example.linza_apps.ui.screens.HomeScreen
 import com.example.linza_apps.ui.screens.MenuScreen
 import com.example.linza_apps.ui.screens.NewOrderScreen
@@ -20,6 +21,7 @@ sealed class Screen(val route:String) {
     object Delivery : Screen("delivery")
     object Customers : Screen("customers")
     object Drivers : Screen("drivers")
+    object AddCustomers : Screen("add_customers")
 }
 
 @Composable
@@ -33,5 +35,6 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         composable(Screen.Delivery.route) {DeliveryScreen(navController)}
         composable(Screen.Customers.route) {CustomerScreen(navController)}
         composable(Screen.Drivers.route) {DriverScreen(navController)}
+        composable(Screen.AddCustomers.route) { AddCustomerScreen(navController) }
     }
 }

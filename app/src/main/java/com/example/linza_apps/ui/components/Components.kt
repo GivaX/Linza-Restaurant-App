@@ -4,6 +4,7 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
@@ -144,4 +145,13 @@ fun DateTimeDisplay(modifier: Modifier = Modifier) {
 fun getCurrentTime(): String {
     val sdf = SimpleDateFormat("dd/MM/yyyy\nhh:mm:ss a", Locale.getDefault())
     return sdf.format(Date())
+}
+
+@Preview
+@Composable
+fun EnterDetails() {
+    Box(
+        modifier = Modifier.fillMaxSize()) {
+
+    }
 }

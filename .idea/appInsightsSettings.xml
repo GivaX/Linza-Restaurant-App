@@ -9,10 +9,10 @@
             <InsightsFilterSettings>
               <option name="connection">
                 <ConnectionSetting>
-                  <option name="appId" value="PLACEHOLDER" />
-                  <option name="mobileSdkAppId" value="" />
-                  <option name="projectId" value="" />
-                  <option name="projectNumber" value="" />
+                  <option name="appId" value="com.example.linza_apps" />
+                  <option name="mobileSdkAppId" value="1:76477963942:android:cc1b1715ec91eed737de67" />
+                  <option name="projectId" value="linza-restaurant" />
+                  <option name="projectNumber" value="76477963942" />
                 </ConnectionSetting>
               </option>
               <option name="signal" value="SIGNAL_UNSPECIFIED" />
