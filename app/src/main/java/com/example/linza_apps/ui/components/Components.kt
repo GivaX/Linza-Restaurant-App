@@ -1,12 +1,16 @@
 package com.example.linza_apps.ui.components
 
+import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
@@ -26,6 +30,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,7 +39,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.linza_apps.navigation.Screen
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -150,8 +159,62 @@ fun getCurrentTime(): String {
 @Preview
 @Composable
 fun EnterDetails() {
-    Box(
-        modifier = Modifier.fillMaxSize()) {
+    var name by remember { mutableStateOf("") }
+    var phoneNumber by remember { mutableStateOf("") }
+    var address by remember { mutableStateOf("") }
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val db = FirebaseFirestore.getInstance()
 
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center) {
+        SnackbarHost(hostState = snackbarHostState, Modifier.align(Alignment.BottomEnd))
+        Column {
+            CustomTextField(name, "Name", { newText -> name = newText })
+            //Spacer(modifier = Modifier.padding(all = 10.dp))
+            CustomTextField(phoneNumber, "Phone Number", { newText -> phoneNumber = newText })
+            //Spacer(modifier = Modifier.padding(all = 10.dp))
+            CustomTextField(address, "Address", { newText -> address = newText })
+            Button(onClick = {
+
+
+                val customer = hashMapOf(
+                    "name" to name,
+                    "phone" to phoneNumber,
+                    "address" to address
+                )
+                name = ""
+                phoneNumber = ""
+                address = ""
+
+                db.collection("Customers").add(customer)
+                    .addOnSuccessListener { documentReference ->
+                        Log.d("Firestore", "Customer added w ID: ${documentReference.id}")
+                        scope.launch {
+                            snackbarHostState.showSnackbar("Customer Added Successfully")
+                        }
+                    }
+                    .addOnFailureListener { e ->
+                        Log.w("Firestore", "Error adding customer", e)
+                        scope.launch {
+                            snackbarHostState.showSnackbar("Customer Addition Failed")
+                        }
+                    }
+            }) {
+                Text("Add Customer")
+            }
+        }
     }
+}
+
+@Composable
+fun CustomTextField(text: String, label:String, textStateChanged: (String) -> Unit) {
+    TextField(
+        value = text,
+        onValueChange = { newText -> textStateChanged(newText)},
+        label = { Text(label) },
+        singleLine = true,
+        modifier = Modifier.padding(all = 15.dp)
+    )
 }
