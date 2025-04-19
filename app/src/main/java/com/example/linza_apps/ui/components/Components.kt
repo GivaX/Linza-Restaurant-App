@@ -1,5 +1,6 @@
 package com.example.linza_apps.ui.components
 
+import android.location.Address
 import android.util.Log
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -37,6 +38,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.ViewModel
 import androidx.navigation.NavController
 import com.example.linza_apps.navigation.Screen
 import com.google.firebase.Firebase
@@ -180,7 +182,7 @@ fun EnterDetails() {
 
 
                 val customer = hashMapOf(
-                    "name" to name,
+                    "name" to name.lowercase(),
                     "phone" to phoneNumber,
                     "address" to address
                 )
@@ -217,4 +219,40 @@ fun CustomTextField(text: String, label:String, textStateChanged: (String) -> Un
         singleLine = true,
         modifier = Modifier.padding(all = 15.dp)
     )
+}
+
+data class Customer (
+    val name: String = "",
+    val phone: String = "",
+    val address: String = ""
+)
+
+
+class CustomerViewModel : ViewModel() {
+    var searchQuery by mutableStateOf("")
+    var searchResults = mutableStateOf<List<Customer>>(emptyList())
+    private val db = Firebase.firestore
+
+    fun onSearchChange(query: String){
+        searchQuery = query
+        if (query.isNotEmpty()){
+            searchCustomers(query)
+        } else {
+            searchResults.value = emptyList()
+        }
+    }
+
+    private fun searchCustomers(query: String) {
+        db.collection("Customers")
+            .orderBy("name")
+            .startAt(query.lowercase())
+            .endAt(query.lowercase() + "\uf8ff")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val customers = snapshot.documents.mapNotNull {
+                    it.toObject(Customer::class.java)
+                }
+                searchResults.value = customers
+            }
+    }
 }

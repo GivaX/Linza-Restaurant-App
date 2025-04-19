@@ -13,7 +13,10 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldState
@@ -31,6 +34,7 @@ import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ListItem
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SearchBar
 import androidx.compose.material3.SearchBarDefaults
@@ -57,6 +61,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.*
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.linza_apps.R
 import com.example.linza_apps.navigation.Screen
@@ -103,112 +108,38 @@ fun NewOrderContent(navController: NavController, modifier: Modifier = Modifier)
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SearchBarBox(
-    textFieldState: TextFieldState,
-    onSearch: (String) -> Unit,
-    searchResults: List<String>,
-    navController: NavController,
-    modifier: Modifier = Modifier
-) {
-    var expanded by rememberSaveable { mutableStateOf(false) }
-    //val results = searchResults.value
-    Box(
-        //modifier = Modifier.fillMaxSize()
-    ) {
-        SearchBar(
-            modifier = Modifier
-                .fillMaxWidth()
-                //.align(Alignment.Center)
-                 .padding(horizontal = 100.dp)
-            ,
-            inputField = {
-                SearchBarDefaults.InputField(
-                    query = textFieldState.text.toString(),
-                    onQueryChange = { textFieldState.edit{ replace(0,length, it) } },
-                    onSearch = {
-                        onSearch(textFieldState.text.toString())
-                        //Log.e("Firestore", searchResults.toString())
-                        expanded = false
-                    },
-                    expanded = expanded,
-                    onExpandedChange = { expanded = it},
-                    placeholder = { Text("Search") }
-                )
-            },
-            expanded = expanded,
-            onExpandedChange = { expanded = it},
+fun CustomerSearchBar(viewModel: CustomerViewModel = viewModel(), modifier: Modifier = Modifier) {
+    val searchQuery by remember { mutableStateOf(viewModel.searchQuery) }
+    val results by viewModel.searchResults
+
+    Column(modifier = Modifier.padding(75.dp)) {
+        OutlinedTextField(
+            value = viewModel.searchQuery,
+            onValueChange = { viewModel.onSearchChange(it)},
+            label = { Text("Search Customers") },
+            modifier = Modifier.fillMaxWidth()
         )
-        {
-            Column(
-                Modifier
-                    .verticalScroll((rememberScrollState()))
-                    .clip(RoundedCornerShape(25.dp))
-            ) {
-                searchResults.forEach { result ->
-                    ListItem(
-                        headlineContent = { Text(result) },
-                        modifier = Modifier
-                            .clickable {
-                                textFieldState.edit { replace(0, length, result) }
-                                expanded = false
-                                navController.navigate(Screen.Menu.route)
-                            }
-                            .fillMaxWidth()
-                    )
-                }
+
+        //Spacer(Modifier.height(10.dp))
+
+        LazyColumn {
+            items(results) { customer ->
+                Text("${customer.name} - ${customer.phone}", modifier = Modifier.padding(8.dp))
+                Log.e("Debug", "$customer.name = $customer.phone")
             }
         }
     }
-
 }
-
-
 
 @Composable
 fun CustomerLookup(navController: NavController, modifier: Modifier = Modifier) {
-    val textFieldState = rememberTextFieldState()
-//    val items = listOf(
-//        "customer 1", "sldkmfklsd", "metorsdkfs"
-//    )
-//
-//    val filteredItems by remember {
-//        derivedStateOf {
-//            val searchText = textFieldState.text.toString()
-//            if (searchText.isEmpty()) {
-//                emptyList()
-//            } else {
-//                items.filter { it.contains(searchText, ignoreCase = true)}
-//            }
-//        }
-//    }
-    val searchResults = remember { mutableStateOf<List<String>>(emptyList()) }
-    val scope = rememberCoroutineScope()
     Box(
         modifier
             .fillMaxSize()
             ,
     ) {
-        SearchBarBox(
-            textFieldState = textFieldState,
-            onSearch =  { query ->
-                scope.launch {
-                    handleSearch(query, searchResults)
-                }
-                //Log.e("Firestore", searchResults.value.toString())
-            },
-            searchResults = searchResults.value,
-            navController = navController,
-            modifier.align(Alignment.Center)
-        )
-        /*Row {
-            Button(onClick = {
-
-            },) {
-                Text("Add New Customer")
-            }
-        }*/
+        CustomerSearchBar()
         ExtendedFloatingActionButton(
             onClick = {
                 navController.navigate(Screen.AddCustomers.route) {
@@ -225,32 +156,5 @@ fun CustomerLookup(navController: NavController, modifier: Modifier = Modifier) 
                 .padding(all = 15.dp)
                 .align(alignment = Alignment.BottomEnd)
         )
-    }
-}
-
-suspend fun handleSearch(
-    query: String,
-    searchResults: MutableState<List<String>>
-) {
-    val db = Firebase.firestore
-
-    val customerRef = db.collection("Customers")
-
-    try {
-        val querySnapshot = customerRef
-            .whereGreaterThanOrEqualTo("name", query)
-            .limit(10)
-            .get()
-            .await()
-
-        Log.e("Firestore", "Query: ${querySnapshot.documents.toString()}")
-
-        val customerNames = querySnapshot.documents.mapNotNull { document ->
-            document.getString("name")
-        }
-        Log.e("Firestore", "Customers names: ${customerNames.toString()}")
-        searchResults.value = customerNames
-    } catch (e:Exception) {
-        Log.e("Firestore", "Error searching customers", e)
     }
 }

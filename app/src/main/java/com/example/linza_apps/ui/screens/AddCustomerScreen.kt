@@ -21,6 +21,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.example.linza_apps.R
 import com.example.linza_apps.ui.components.AppBar
+import com.example.linza_apps.ui.components.CustomTextField
 import com.example.linza_apps.ui.components.DateTimeDisplay
 import com.example.linza_apps.ui.components.EnterDetails
 import com.example.linza_apps.ui.components.Tabs
