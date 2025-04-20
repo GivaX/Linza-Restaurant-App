@@ -122,7 +122,7 @@ fun CustomerSearchBar(viewModel: CustomerViewModel = viewModel(), modifier: Modi
             leadingIcon = {
                 Icon(Icons.Default.Search, contentDescription = "Search Icon")
             },
-            shape = RoundedCornerShape(16.dp),
+            shape = RoundedCornerShape(20.dp),
             modifier = Modifier.fillMaxWidth()
         )
 

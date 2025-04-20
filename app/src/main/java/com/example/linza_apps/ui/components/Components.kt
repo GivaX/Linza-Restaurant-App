@@ -222,6 +222,7 @@ fun CustomTextField(text: String, label:String, textStateChanged: (String) -> Un
 }
 
 data class Customer (
+    val id: Int,
     val name: String = "",
     val phone: String = "",
     val address: String = ""
