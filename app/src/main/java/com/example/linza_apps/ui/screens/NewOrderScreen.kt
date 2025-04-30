@@ -110,7 +110,7 @@ fun NewOrderContent(navController: NavController, modifier: Modifier = Modifier)
 }
 
 @Composable
-fun CustomerSearchBar(viewModel: CustomerViewModel = viewModel(), modifier: Modifier = Modifier) {
+fun CustomerSearchBar(viewModel: CustomerViewModel = viewModel(), navController: NavController, modifier: Modifier = Modifier) {
     val searchQuery by remember { mutableStateOf(viewModel.searchQuery) }
     val results by viewModel.searchResults
 
@@ -130,8 +130,17 @@ fun CustomerSearchBar(viewModel: CustomerViewModel = viewModel(), modifier: Modi
 
         LazyColumn {
             items(results) { customer ->
-                Text("${customer.name} - ${customer.phone}", modifier = Modifier.padding(8.dp))
-                Log.e("Debug", "$customer.name = $customer.phone")
+                Column (
+                    Modifier
+                        .fillMaxWidth()
+                        .padding(8.dp)
+                        .clickable { navController.navigate("menu/${customer.id}") }
+                ){
+                    Text(
+                        "${customer.name} - ${customer.phone}",
+                    )
+                    Log.e("Debug", "$customer.name = $customer.phone")
+                }
             }
         }
     }
@@ -144,7 +153,7 @@ fun CustomerLookup(navController: NavController, modifier: Modifier = Modifier) 
             .fillMaxSize()
             ,
     ) {
-        CustomerSearchBar()
+        CustomerSearchBar(navController = navController)
         ExtendedFloatingActionButton(
             onClick = {
                 navController.navigate(Screen.AddCustomers.route) {

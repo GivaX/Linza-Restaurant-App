@@ -44,8 +44,12 @@ import com.example.linza_apps.navigation.Screen
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
+import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -113,8 +117,11 @@ fun Tabs(navController: NavController, i: Int, modifier: Modifier = Modifier) {
                 modifier = Modifier.padding(all = 10.dp),
                 content = {
                     Text(
-                        text = screen.route.replace("_", " ")
-                            .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() },
+                        text = when {
+                            screen.route.startsWith("menu") -> "Menu"
+                            else -> screen.route.replace("_", " ")
+                                .replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
+                        },
 //                    color = if (!isHomeScreen && selectedTabIndex == i) {
 //                        MaterialTheme.colorScheme.primary
 //                    } else {
@@ -180,8 +187,10 @@ fun EnterDetails() {
             CustomTextField(address, "Address", { newText -> address = newText })
             Button(onClick = {
 
+                val customerRef = db.collection("Customers").document()
 
                 val customer = hashMapOf(
+                    "id" to customerRef.id,
                     "name" to name.lowercase(),
                     "phone" to phoneNumber,
                     "address" to address
@@ -190,9 +199,9 @@ fun EnterDetails() {
                 phoneNumber = ""
                 address = ""
 
-                db.collection("Customers").add(customer)
-                    .addOnSuccessListener { documentReference ->
-                        Log.d("Firestore", "Customer added w ID: ${documentReference.id}")
+                customerRef.set(customer)
+                    .addOnSuccessListener {
+                        Log.d("Firestore", "Customer added w ID: ${customerRef.id}")
                         scope.launch {
                             snackbarHostState.showSnackbar("Customer Added Successfully")
                         }
@@ -222,7 +231,7 @@ fun CustomTextField(text: String, label:String, textStateChanged: (String) -> Un
 }
 
 data class Customer (
-    val id: Int,
+    val id: String = "",
     val name: String = "",
     val phone: String = "",
     val address: String = ""
@@ -255,5 +264,10 @@ class CustomerViewModel : ViewModel() {
                 }
                 searchResults.value = customers
             }
+    }
+
+    fun getCustomerId(customerId : String): Flow<Customer?> = flow {
+        val snapshot = db.collection("Customers").document(customerId).get().await()
+        emit(snapshot.toObject(Customer::class.java))
     }
 }
