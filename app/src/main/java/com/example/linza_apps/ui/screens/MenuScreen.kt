@@ -1,5 +1,6 @@
 package com.example.linza_apps.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -35,6 +36,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
@@ -114,17 +116,31 @@ fun Menu(modifier: Modifier = Modifier, viewModel: MenuViewModel) {
     var selectedSize by remember { mutableStateOf<String?>(null) }
 
     val menuItem by viewModel.menuItem.collectAsState()
+    val context = LocalContext.current
 
-    LaunchedEffect(menuItem, selectedSize) {
+    LaunchedEffect(menuItem) {
         selectedSize?.let { size ->
             menuItem?.let { item ->
                 itemName = item.name
                 price = when (size) {
-                    "S" -> item.priceSmall.toString()
-                    "M" -> item.priceMedium.toString()
-                    "L" -> item.priceLarge.toString()
+                    "S" -> item.priceSmall?.let { "Rs.$it" } ?: run {
+                        Toast.makeText(context, "Item not found", Toast.LENGTH_SHORT).show()
+                        "null"
+                    }
+                    "M" -> item.priceMedium?.let { "Rs.$it" } ?: run {
+                        Toast.makeText(context, "Item not found", Toast.LENGTH_SHORT).show()
+                        "null"
+                    }
+                    "L" -> item.priceLarge?.let { "Rs.$it" } ?: run {
+                        Toast.makeText(context, "Item not found", Toast.LENGTH_SHORT).show()
+                        "null"
+                    }
+                    //"S" -> ":   Rs. ${item.priceSmall}"
+                    //"M" -> ":   Rs. ${item.priceMedium}"
+                    //"L" -> ":   Rs. ${item.priceLarge}"
                     else -> ""
                 }
+                //selectedSize = null
             }
         }
     }
@@ -132,15 +148,17 @@ fun Menu(modifier: Modifier = Modifier, viewModel: MenuViewModel) {
     Box(modifier.fillMaxSize()){
         Row (Modifier.fillMaxWidth()){
             Box(modifier = Modifier
-                .weight(1f)
+                .weight(2f)
                 .background(color = Color.White)
                 .fillMaxHeight()){
                 Column {
-                    Text(color = Color.Black, text = "$itemName $price")
+                    if (price != "null") {
+                        Text(color = Color.Black, text = "$itemName $price")
+                    }
                 }
             }
             Box(modifier = Modifier
-                .weight(3f)
+                .weight(2f)
                 .background(color = Color.DarkGray)
                 .fillMaxHeight()){
                 Column(modifier = Modifier.padding(horizontal = 200.dp, vertical = 100.dp)) {
