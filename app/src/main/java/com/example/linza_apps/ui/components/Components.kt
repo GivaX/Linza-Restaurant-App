@@ -47,6 +47,8 @@ import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -219,6 +221,16 @@ fun EnterDetails() {
     }
 }
 
+data class MenuItem(
+    val menuNumber: Int = 0,
+    val name: String = "",
+    val category: String = "",
+    val priceSmall: Int? = null,
+    val priceMedium: Int? = null,
+    val priceLarge: Int? = null,
+    val available: Boolean = true
+)
+
 @Composable
 fun CustomTextField(text: String, label:String, textStateChanged: (String) -> Unit) {
     TextField(
@@ -269,5 +281,37 @@ class CustomerViewModel : ViewModel() {
     fun getCustomerId(customerId : String): Flow<Customer?> = flow {
         val snapshot = db.collection("Customers").document(customerId).get().await()
         emit(snapshot.toObject(Customer::class.java))
+    }
+}
+
+@Composable
+fun Numpad(onDigit: (String) -> Unit) {
+    Column {
+        listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0","<-", "S", "M", "L").chunked(3).forEach { row ->
+            Row {
+                row.forEach { digit ->
+                    Button(modifier = Modifier.padding(horizontal = 3.dp), onClick = { onDigit(digit) }) {
+                        Text(digit)
+                    }
+                }
+            }
+        }
+    }
+}
+
+class MenuViewModel : ViewModel() {
+    private val db = Firebase.firestore
+
+    val _menuItem = MutableStateFlow<MenuItem?>(null)
+    val menuItem : StateFlow<MenuItem?> = _menuItem
+
+    fun fetchItem(menuNum : Int) {
+        db.collection("Menu")
+            .whereEqualTo("menuNumber", menuNum)
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val item = snapshot.documents.firstOrNull()?.toObject(MenuItem::class.java)
+                _menuItem.value = item
+            }
     }
 }

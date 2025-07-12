@@ -1,0 +1,1237 @@
+{
+  "menuItems": {
+    "1": {
+      "menuNumber": 1,
+      "name": "Mixed Salad",
+      "category": "Appetizers & Salads",
+      "priceSmall": 500,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "2": {
+      "menuNumber": 2,
+      "name": "Tomato & Onion Salad",
+      "category": "Appetizers & Salads",
+      "priceSmall": 500,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "3": {
+      "menuNumber": 3,
+      "name": "Cucumber Salad",
+      "category": "Appetizers & Salads",
+      "priceSmall": 500,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "4": {
+      "menuNumber": 4,
+      "name": "Potato Chips",
+      "category": "Appetizers & Salads",
+      "priceSmall": 600,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "5": {
+      "menuNumber": 5,
+      "name": "Vegetable Clear Soup",
+      "category": "Soup",
+      "priceSmall": 350,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "6": {
+      "menuNumber": 6,
+      "name": "Seafood Clear Soup",
+      "category": "Soup",
+      "priceSmall": 400,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "7": {
+      "menuNumber": 7,
+      "name": "Sweet Corn & Chicken Soup",
+      "category": "Soup",
+      "priceSmall": 400,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "8": {
+      "menuNumber": 8,
+      "name": "Chicken & Egg Soup",
+      "category": "Soup",
+      "priceSmall": 400,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "9": {
+      "menuNumber": 9,
+      "name": "Chicken & Mushroom Soup",
+      "category": "Soup",
+      "priceSmall": 400,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "10": {
+      "menuNumber": 10,
+      "name": "Tomyam Seafood Soup (Cuttlefish/Fish/Prawns)",
+      "category": "Soup",
+      "priceSmall": 500,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "11": {
+      "menuNumber": 11,
+      "name": "Mixed Hot & Sour Soup",
+      "category": "Soup",
+      "priceSmall": 500,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "12": {
+      "menuNumber": 12,
+      "name": "Garoupa Dry Red Chilies",
+      "category": "Fish",
+      "priceSmall": 1000,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "13": {
+      "menuNumber": 13,
+      "name": "Deep Fried Garoupa with Hot Garlic Sauce",
+      "category": "Fish",
+      "priceSmall": 1000,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "14": {
+      "menuNumber": 14,
+      "name": "Sliced Seer Fish with Hot Garlic Sauce",
+      "category": "Fish",
+      "priceSmall": 1300,
+      "priceMedium": 2600,
+      "priceLarge": 3900,
+      "available": true
+    },
+    "15": {
+      "menuNumber": 15,
+      "name": "Sliced Seer Fish Sweet Sour Sauce",
+      "category": "Fish",
+      "priceSmall": 1300,
+      "priceMedium": 2600,
+      "priceLarge": 3900,
+      "available": true
+    },
+    "16": {
+      "menuNumber": 16,
+      "name": "Devilled Fish",
+      "category": "Fish",
+      "priceSmall": 1300,
+      "priceMedium": 2600,
+      "priceLarge": 3900,
+      "available": true
+    },
+    "17": {
+      "menuNumber": 17,
+      "name": "A fried fish (Thalapath)",
+      "category": "Fish",
+      "priceSmall": 1100,
+      "priceMedium": 2600,
+      "priceLarge": 3900,
+      "available": true
+    },
+    "18": {
+      "menuNumber": 18,
+      "name": "Devilled Cuttlefish",
+      "category": "Cuttlefish",
+      "priceSmall": 1300,
+      "priceMedium": 2600,
+      "priceLarge": 3900,
+      "available": true
+    },
+    "19": {
+      "menuNumber": 19,
+      "name": "Cuttlefish Hot Butter",
+      "category": "Cuttlefish",
+      "priceSmall": 1300,
+      "priceMedium": 2600,
+      "priceLarge": 3900,
+      "available": true
+    },
+    "20": {
+      "menuNumber": 20,
+      "name": "Cuttlefish in Hot Garlic Sauce",
+      "category": "Cuttlefish",
+      "priceSmall": 1300,
+      "priceMedium": 2600,
+      "priceLarge": 3900,
+      "available": true
+    },
+    "21": {
+      "menuNumber": 21,
+      "name": "Cuttlefish Chilli Sauce",
+      "category": "Cuttlefish",
+      "priceSmall": 1300,
+      "priceMedium": 2600,
+      "priceLarge": 3900,
+      "available": true
+    },
+    "22": {
+      "menuNumber": 22,
+      "name": "Butter Fried Cuttlefish with Chips",
+      "category": "Cuttlefish",
+      "priceSmall": 1300,
+      "priceMedium": 2600,
+      "priceLarge": 3900,
+      "available": true
+    },
+    "23": {
+      "menuNumber": 23,
+      "name": "Fried Prawns with Chips",
+      "category": "Prawns",
+      "priceSmall": 1700,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "24": {
+      "menuNumber": 24,
+      "name": "Butter Fried Prawns with Chips",
+      "category": "Prawns",
+      "priceSmall": 1700,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "25": {
+      "menuNumber": 25,
+      "name": "Prawns with Cashew Nut",
+      "category": "Prawns",
+      "priceSmall": 1800,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "26": {
+      "menuNumber": 26,
+      "name": "Prawns with Hot Garlic Sauce",
+      "category": "Prawns",
+      "priceSmall": 1400,
+      "priceMedium": 2800,
+      "priceLarge": 4200,
+      "available": true
+    },
+    "27": {
+      "menuNumber": 27,
+      "name": "Sweet & Sauce Prawns",
+      "category": "Prawns",
+      "priceSmall": 1500,
+      "priceMedium": 3000,
+      "priceLarge": 4200,
+      "available": true
+    },
+    "28": {
+      "menuNumber": 28,
+      "name": "Devilled Prawns",
+      "category": "Prawns",
+      "priceSmall": 1400,
+      "priceMedium": 2800,
+      "priceLarge": 4200,
+      "available": true
+    },
+    "29": {
+      "menuNumber": 29,
+      "name": "Prawns Hot Butter",
+      "category": "Prawns",
+      "priceSmall": 1500,
+      "priceMedium": 3000,
+      "priceLarge": 4200,
+      "available": true
+    },
+    "30": {
+      "menuNumber": 30,
+      "name": "Roast Chicken with Chips",
+      "category": "Chicken",
+      "priceSmall": 2500,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "31": {
+      "menuNumber": 31,
+      "name": "Chicken with Hot Garlic",
+      "category": "Chicken",
+      "priceSmall": 1000,
+      "priceMedium": 2000,
+      "priceLarge": 3000,
+      "available": true
+    },
+    "32": {
+      "menuNumber": 32,
+      "name": "Chilly Chicken",
+      "category": "Chicken",
+      "priceSmall": 1000,
+      "priceMedium": 2000,
+      "priceLarge": 3000,
+      "available": true
+    },
+    "33": {
+      "menuNumber": 33,
+      "name": "Sweet & Sour Chicken",
+      "category": "Chicken",
+      "priceSmall": 1000,
+      "priceMedium": 2000,
+      "priceLarge": 3000,
+      "available": true
+    },
+    "34": {
+      "menuNumber": 34,
+      "name": "Devilled Chicken",
+      "category": "Chicken",
+      "priceSmall": 1000,
+      "priceMedium": 2000,
+      "priceLarge": 3000,
+      "available": true
+    },
+    "35": {
+      "menuNumber": 35,
+      "name": "Chicken with Cashew Nut",
+      "category": "Chicken",
+      "priceSmall": 1500,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "36": {
+      "menuNumber": 36,
+      "name": "Chicken Chopsuey with Vegetable",
+      "category": "Chicken",
+      "priceSmall": 1300,
+      "priceMedium": 2600,
+      "priceLarge": 3900,
+      "available": true
+    },
+    "37": {
+      "menuNumber": 37,
+      "name": "Chicken with Dry Red Chilli",
+      "category": "Chicken",
+      "priceSmall": 1000,
+      "priceMedium": 2000,
+      "priceLarge": 3000,
+      "available": true
+    },
+    "38": {
+      "menuNumber": 38,
+      "name": "Chicken Hot Butter",
+      "category": "Chicken",
+      "priceSmall": 1100,
+      "priceMedium": 2200,
+      "priceLarge": 3000,
+      "available": true
+    },
+    "39": {
+      "menuNumber": 39,
+      "name": "Pork With Green Pepper & Cashew Nut",
+      "category": "Pork",
+      "priceSmall": 1500,
+      "priceMedium": 3000,
+      "priceLarge": null,
+      "available": true
+    },
+    "40": {
+      "menuNumber": 40,
+      "name": "Pork with Hot Sauce",
+      "category": "Pork",
+      "priceSmall": 1100,
+      "priceMedium": 2200,
+      "priceLarge": null,
+      "available": true
+    },
+    "41": {
+      "menuNumber": 41,
+      "name": "Sweet & Sour Pork",
+      "category": "Pork",
+      "priceSmall": 1100,
+      "priceMedium": 2200,
+      "priceLarge": null,
+      "available": true
+    },
+    "42": {
+      "menuNumber": 42,
+      "name": "Devilled Pork",
+      "category": "Pork",
+      "priceSmall": 1100,
+      "priceMedium": 2200,
+      "priceLarge": null,
+      "available": true
+    },
+    "43": {
+      "menuNumber": 43,
+      "name": "Fried Pork with Kankun",
+      "category": "Pork",
+      "priceSmall": 1100,
+      "priceMedium": 2200,
+      "priceLarge": null,
+      "available": true
+    },
+    "44": {
+      "menuNumber": 44,
+      "name": "Fish Stew (Thalapath)",
+      "category": "Stew",
+      "priceSmall": 1300,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "45": {
+      "menuNumber": 45,
+      "name": "Chicken Stew",
+      "category": "Stew",
+      "priceSmall": 1000,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "46": {
+      "menuNumber": 46,
+      "name": "Pork Stew",
+      "category": "Stew",
+      "priceSmall": 1100,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "47": {
+      "menuNumber": 47,
+      "name": "Seafood with Vegetable (No Rice)",
+      "category": "Stew",
+      "priceSmall": 1500,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "48": {
+      "menuNumber": 48,
+      "name": "Mixed Chopsuey (Only Meat & Vegetable)",
+      "category": "Stew",
+      "priceSmall": 1500,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "49": {
+      "menuNumber": 49,
+      "name": "Vegetable Fried Noodles",
+      "category": "Noodles",
+      "priceSmall": 600,
+      "priceMedium": 1200,
+      "priceLarge": 1800,
+      "available": true
+    },
+    "50": {
+      "menuNumber": 50,
+      "name": "Egg & Vegetable Noodles",
+      "category": "Noodles",
+      "priceSmall": 700,
+      "priceMedium": 1400,
+      "priceLarge": 2100,
+      "available": true
+    },
+    "51": {
+      "menuNumber": 51,
+      "name": "Chicken & Egg Noodles",
+      "category": "Noodles",
+      "priceSmall": 800,
+      "priceMedium": 1600,
+      "priceLarge": 2400,
+      "available": true
+    },
+    "52": {
+      "menuNumber": 52,
+      "name": "Fish Noodles",
+      "category": "Noodles",
+      "priceSmall": 700,
+      "priceMedium": 1400,
+      "priceLarge": 2100,
+      "available": true
+    },
+    "53": {
+      "menuNumber": 53,
+      "name": "Prawns & Egg Noodles",
+      "category": "Noodles",
+      "priceSmall": 800,
+      "priceMedium": 1600,
+      "priceLarge": 2400,
+      "available": true
+    },
+    "54": {
+      "menuNumber": 54,
+      "name": "Seafood Noodles",
+      "category": "Noodles",
+      "priceSmall": 850,
+      "priceMedium": 1700,
+      "priceLarge": 2550,
+      "available": true
+    },
+    "55": {
+      "menuNumber": 55,
+      "name": "Mixed Fried Noodles",
+      "category": "Noodles",
+      "priceSmall": 850,
+      "priceMedium": 1700,
+      "priceLarge": 2550,
+      "available": true
+    },
+    "56": {
+      "menuNumber": 56,
+      "name": "Mixed Chopsuey Noodles",
+      "category": "Noodles",
+      "priceSmall": 1400,
+      "priceMedium": 2800,
+      "priceLarge": 4200,
+      "available": true
+    },
+    "57": {
+      "menuNumber": 57,
+      "name": "Seafood Chopsuey Noodles",
+      "category": "Noodles",
+      "priceSmall": 1400,
+      "priceMedium": 2800,
+      "priceLarge": 4200,
+      "available": true
+    },
+    "58": {
+      "menuNumber": 58,
+      "name": "Chicken Chopsuey Noodles",
+      "category": "Noodles",
+      "priceSmall": 1200,
+      "priceMedium": 2400,
+      "priceLarge": 3600,
+      "available": true
+    },
+    "59": {
+      "menuNumber": 59,
+      "name": "Vegetable Chopsuey Noodles",
+      "category": "Noodles",
+      "priceSmall": 900,
+      "priceMedium": 1800,
+      "priceLarge": 2700,
+      "available": true
+    },
+    "60": {
+      "menuNumber": 60,
+      "name": "Mixed Fried Rice (Chicken/Cuttlefish/Prawn)",
+      "category": "Basmathi Fried Rice",
+      "priceSmall": 1000,
+      "priceMedium": 2000,
+      "priceLarge": 3000,
+      "available": true
+    },
+    "61": {
+      "menuNumber": 61,
+      "name": "Chicken Fried Rice",
+      "category": "Basmathi Fried Rice",
+      "priceSmall": 900,
+      "priceMedium": 1800,
+      "priceLarge": 2700,
+      "available": true
+    },
+    "62": {
+      "menuNumber": 62,
+      "name": "Prawn Fried Rice",
+      "category": "Basmathi Fried Rice",
+      "priceSmall": 1000,
+      "priceMedium": 2000,
+      "priceLarge": 3000,
+      "available": true
+    },
+    "63": {
+      "menuNumber": 63,
+      "name": "Seafood Fried Rice",
+      "category": "Basmathi Fried Rice",
+      "priceSmall": 1000,
+      "priceMedium": 2000,
+      "priceLarge": 3000,
+      "available": true
+    },
+    "64": {
+      "menuNumber": 64,
+      "name": "Fish Fried Rice",
+      "category": "Basmathi Fried Rice",
+      "priceSmall": 900,
+      "priceMedium": 1800,
+      "priceLarge": 2700,
+      "available": true
+    },
+    "65": {
+      "menuNumber": 65,
+      "name": "Egg & Vegetable Fried Rice",
+      "category": "Basmathi Fried Rice",
+      "priceSmall": 750,
+      "priceMedium": 1500,
+      "priceLarge": 2250,
+      "available": true
+    },
+    "66": {
+      "menuNumber": 66,
+      "name": "Vegetable Fried Rice",
+      "category": "Basmathi Fried Rice",
+      "priceSmall": 650,
+      "priceMedium": 1300,
+      "priceLarge": 1950,
+      "available": true
+    },
+    "67": {
+      "menuNumber": 67,
+      "name": "Linza Fried Rice (Chicken/Cuttlefish/Prawn)",
+      "category": "Basmathi Fried Rice",
+      "priceSmall": 1100,
+      "priceMedium": 2200,
+      "priceLarge": 3300,
+      "available": true
+    },
+    "68": {
+      "menuNumber": 68,
+      "name": "Garlic Fried Rice",
+      "category": "Basmathi Fried Rice",
+      "priceSmall": 650,
+      "priceMedium": 1300,
+      "priceLarge": 1950,
+      "available": true
+    },
+    "69": {
+      "menuNumber": 69,
+      "name": "Chicken Chopsuey Rice",
+      "category": "Basmathi Fried Rice",
+      "priceSmall": 1400,
+      "priceMedium": 2800,
+      "priceLarge": 4200,
+      "available": true
+    },
+    "70": {
+      "menuNumber": 70,
+      "name": "Mixed Chopsuey Rice(Chicken/Cuttlefish/Prawn)",
+      "category": "Basmathi Fried Rice",
+      "priceSmall": 1500,
+      "priceMedium": 3000,
+      "priceLarge": 4500,
+      "available": true
+    },
+    "71": {
+      "menuNumber": 71,
+      "name": "Seafood Chopsuey Rice",
+      "category": "Basmathi Fried Rice",
+      "priceSmall": 1500,
+      "priceMedium": 3000,
+      "priceLarge": 4500,
+      "available": true
+    },
+    "72": {
+      "menuNumber": 72,
+      "name": "Nasi Goreng Fried Rice (Chicken)",
+      "category": "Basmathi Fried Rice",
+      "priceSmall": 900,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "73": {
+      "menuNumber": 73,
+      "name": "Chicken Biriyani",
+      "category": "Basmathi Fried Rice",
+      "priceSmall": 900,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "74": {
+      "menuNumber": 74,
+      "name": "Fish Biriyani",
+      "category": "Basmathi Fried Rice",
+      "priceSmall": 900,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "75": {
+      "menuNumber": 75,
+      "name": "Special Set Menu (Egg Rice/Veg.Chopsuey/Chili Chicken)",
+      "category": "Basmathi Fried Rice",
+      "priceSmall": 900,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "76": {
+      "menuNumber": 76,
+      "name": "Special Set Menu (Egg Rice/Veg. Chopsuey/Chili Fish)",
+      "category": "Basmathi Fried Rice",
+      "priceSmall": 900,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "77": {
+      "menuNumber": 77,
+      "name": "Yang Chow Fried Rice (Pork)",
+      "category": "Basmathi Fried Rice",
+      "priceSmall": 800,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "78": {
+      "menuNumber": 78,
+      "name": "Vegetable Chopsuey Rice",
+      "category": "Basmathi Fried Rice",
+      "priceSmall": 1000,
+      "priceMedium": 2000,
+      "priceLarge": 3000,
+      "available": true
+    },
+    "79": {
+      "menuNumber": 79,
+      "name": "Keeri Samba Mixed Fried Rice",
+      "category": "Keeri Samba Fried Rice",
+      "priceSmall": 800,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "80": {
+      "menuNumber": 80,
+      "name": "Keeri Samba Chicken Mixed Fried Rice",
+      "category": "Keeri Samba Fried Rice",
+      "priceSmall": 700,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "81": {
+      "menuNumber": 81,
+      "name": "Keeri Samba Prawns Fried Rice",
+      "category": "Keeri Samba Fried Rice",
+      "priceSmall": 800,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "82": {
+      "menuNumber": 82,
+      "name": "Keeri Samba Seafood Fride Rice",
+      "category": "Keeri Samba Fried Rice",
+      "priceSmall": 800,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "83": {
+      "menuNumber": 83,
+      "name": "Keeri Samba Fish Mixed Fried Rice",
+      "category": "Keeri Samba Fried Rice",
+      "priceSmall": 700,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "84": {
+      "menuNumber": 84,
+      "name": "Keeri Samba Chicken Chopsuey Rice",
+      "category": "Keeri Samba Fried Rice",
+      "priceSmall": 1000,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "85": {
+      "menuNumber": 85,
+      "name": "Keeri Samba Mixed Chopsuey Rice",
+      "category": "Keeri Samba Fried Rice",
+      "priceSmall": 1100,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "86": {
+      "menuNumber": 86,
+      "name": "Keeri Samba Seafood Chopsuey Rice",
+      "category": "Keeri Samba Fried Rice",
+      "priceSmall": 1100,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "87": {
+      "menuNumber": 87,
+      "name": "Keeri Samba Nasi Goreng Fried Rice",
+      "category": "Keeri Samba Fried Rice",
+      "priceSmall": 800,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "88": {
+      "menuNumber": 88,
+      "name": "Keeri Samba Chicken Biriyani",
+      "category": "Keeri Samba Fried Rice",
+      "priceSmall": 800,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "89": {
+      "menuNumber": 89,
+      "name": "Samba Egg Fried Rice",
+      "category": "Samba Fried Rice(Set Menu)",
+      "priceSmall": 500,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "90": {
+      "menuNumber": 90,
+      "name": "Samba Chicken Fried Rice",
+      "category": "Samba Fried Rice(Set Menu)",
+      "priceSmall": 500,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "91": {
+      "menuNumber": 91,
+      "name": "Samba Fish Fried Rice",
+      "category": "Samba Fried Rice(Set Menu)",
+      "priceSmall": 500,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "92": {
+      "menuNumber": 92,
+      "name": "Samba Vegetable Fried Rice",
+      "category": "Samba Fried Rice(Set Menu)",
+      "priceSmall": 500,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "93": {
+      "menuNumber": 93,
+      "name": "Egg Kottu Rotti",
+      "category": "Kottu",
+      "priceSmall": 650,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "94": {
+      "menuNumber": 94,
+      "name": "Fish Kottu Rotti",
+      "category": "Kottu",
+      "priceSmall": 800,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "95": {
+      "menuNumber": 95,
+      "name": "Chicken Kottu Rotti",
+      "category": "Kottu",
+      "priceSmall": 800,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "96": {
+      "menuNumber": 96,
+      "name": "Vegetable Kottu Rotti",
+      "category": "Kottu",
+      "priceSmall": 550,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "97": {
+      "menuNumber": 97,
+      "name": "Chicken String Hoppers Kottu",
+      "category": "Kottu",
+      "priceSmall": 800,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "98": {
+      "menuNumber": 98,
+      "name": "Fish String Hoppers Kottu",
+      "category": "Kottu",
+      "priceSmall": 800,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "99": {
+      "menuNumber": 99,
+      "name": "Egg String Hoppers Kottu",
+      "category": "Kottu",
+      "priceSmall": 650,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "100": {
+      "menuNumber": 100,
+      "name": "Vegetable String Hoppers Kottu",
+      "category": "Kottu",
+      "priceSmall": 550,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "101": {
+      "menuNumber": 101,
+      "name": "Vegetable Chopsuey",
+      "category": "Vegetable",
+      "priceSmall": 500,
+      "priceMedium": 1000,
+      "priceLarge": 1500,
+      "available": true
+    },
+    "102": {
+      "menuNumber": 102,
+      "name": "Mixed Vegetable in Oyster Sauce",
+      "category": "Vegetable",
+      "priceSmall": 500,
+      "priceMedium": 1000,
+      "priceLarge": 1500,
+      "available": true
+    },
+    "103": {
+      "menuNumber": 103,
+      "name": "Mixed Vegetable with Chili Sauce",
+      "category": "Vegetable",
+      "priceSmall": 500,
+      "priceMedium": 1000,
+      "priceLarge": 1500,
+      "available": true
+    },
+    "104": {
+      "menuNumber": 104,
+      "name": "Pan Fried Kankung",
+      "category": "Vegetable",
+      "priceSmall": 400,
+      "priceMedium": 800,
+      "priceLarge": 1200,
+      "available": true
+    },
+    "105": {
+      "menuNumber": 105,
+      "name": "Kankung with hot Garlic Sauce",
+      "category": "Vegetable",
+      "priceSmall": 400,
+      "priceMedium": 800,
+      "priceLarge": 1200,
+      "available": true
+    },
+    "106": {
+      "menuNumber": 106,
+      "name": "Button Mushroom with Hot Gralic Sauce",
+      "category": "Vegetable",
+      "priceSmall": 600,
+      "priceMedium": 1200,
+      "priceLarge": 1800,
+      "available": true
+    },
+    "107": {
+      "menuNumber": 107,
+      "name": "Button Mushroom with Oyster Sauce",
+      "category": "Vegetable",
+      "priceSmall": 600,
+      "priceMedium": 1200,
+      "priceLarge": 1800,
+      "available": true
+    },
+    "108": {
+      "menuNumber": 108,
+      "name": "Fresh Mushroom with Hot Garlic Sauce",
+      "category": "Vegetable",
+      "priceSmall": 500,
+      "priceMedium": 1000,
+      "priceLarge": 1500,
+      "available": true
+    },
+    "109": {
+      "menuNumber": 109,
+      "name": "Mushroom Hot Butter",
+      "category": "Vegetable",
+      "priceSmall": 500,
+      "priceMedium": 1000,
+      "priceLarge": 1500,
+      "available": true
+    },
+    "110": {
+      "menuNumber": 110,
+      "name": "Boiled Vegetable",
+      "category": "Vegetable",
+      "priceSmall": 500,
+      "priceMedium": 1000,
+      "priceLarge": 1500,
+      "available": true
+    },
+    "111": {
+      "menuNumber": 111,
+      "name": "Crispy Fried Cashew Nuts (100g)",
+      "category": "Vegetable",
+      "priceSmall": 600,
+      "priceMedium": 1200,
+      "priceLarge": 1800,
+      "available": true
+    },
+    "112": {
+      "menuNumber": 112,
+      "name": "Chicken Rice & Curry",
+      "category": "Rice & Curry",
+      "priceSmall": 450,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "113": {
+      "menuNumber": 113,
+      "name": "Fish Rice & Curry",
+      "category": "Rice & Curry",
+      "priceSmall": 500,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "114": {
+      "menuNumber": 114,
+      "name": "Egg Rice & Curry",
+      "category": "Rice & Curry",
+      "priceSmall": 400,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "115": {
+      "menuNumber": 115,
+      "name": "Vegetable Rice & Curry",
+      "category": "Rice & Curry",
+      "priceSmall": 350,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "116": {
+      "menuNumber": 116,
+      "name": "Red Rice & Curry (Chicken)",
+      "category": "Rice & Curry",
+      "priceSmall": 350,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "117": {
+      "menuNumber": 117,
+      "name": "Red Rice & Curry (Fish)",
+      "category": "Rice & Curry",
+      "priceSmall": 400,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "118": {
+      "menuNumber": 118,
+      "name": "Red Rice & Curry (Egg)",
+      "category": "Rice & Curry",
+      "priceSmall": 300,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "119": {
+      "menuNumber": 119,
+      "name": "Red Rice & Curry (Vegetable)",
+      "category": "Rice & Curry",
+      "priceSmall": 200,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "120": {
+      "menuNumber": 120,
+      "name": "Samba Plain Rice (Only white Rice)",
+      "category": "Rice & Curry",
+      "priceSmall": 300,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "121": {
+      "menuNumber": 121,
+      "name": "Basmathi Plain Rice (Only white Rice)",
+      "category": "Rice & Curry",
+      "priceSmall": 450,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "122": {
+      "menuNumber": 122,
+      "name": "Sri Lankan Omelets with Chips",
+      "category": "Omelets",
+      "priceSmall": 500,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "123": {
+      "menuNumber": 123,
+      "name": "Prawn Omelets with Chips",
+      "category": "Omelets",
+      "priceSmall": 700,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "124": {
+      "menuNumber": 124,
+      "name": "Chicken Omelets with Chips",
+      "category": "Omelets",
+      "priceSmall": 600,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "125": {
+      "menuNumber": 125,
+      "name": "Cheese & Tomato Onion Omelets with Chips",
+      "category": "Omelets",
+      "priceSmall": 800,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "126": {
+      "menuNumber": 126,
+      "name": "String Hoppers",
+      "category": "String Hoppers",
+      "priceSmall": 10,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "127": {
+      "menuNumber": 127,
+      "name": "Chicken String Hoppers Parcel",
+      "category": "String Hoppers",
+      "priceSmall": 375,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "128": {
+      "menuNumber": 128,
+      "name": "Fish String Hoppers Parcel",
+      "category": "String Hoppers",
+      "priceSmall": 375,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "129": {
+      "menuNumber": 129,
+      "name": "Chicken Curry",
+      "category": "Curry",
+      "priceSmall": 400,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "130": {
+      "menuNumber": 130,
+      "name": "Fish Curry (Thalapath)",
+      "category": "Curry",
+      "priceSmall": 400,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "131": {
+      "menuNumber": 131,
+      "name": "Potato Curry",
+      "category": "Curry",
+      "priceSmall": 100,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "132": {
+      "menuNumber": 132,
+      "name": "Curry (Fish/Chicken Only)",
+      "category": "Curry",
+      "priceSmall": 60,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "133": {
+      "menuNumber": 133,
+      "name": "Fried Chicken (01 Pcs)",
+      "category": "Extra",
+      "priceSmall": 240,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "134": {
+      "menuNumber": 134,
+      "name": "Fried Egg",
+      "category": "Extra",
+      "priceSmall": 80,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "135": {
+      "menuNumber": 135,
+      "name": "Caramel",
+      "category": "Dessert",
+      "priceSmall": 150,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "136": {
+      "menuNumber": 136,
+      "name": "Watalappan",
+      "category": "Dessert",
+      "priceSmall": 150,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    },
+    "137": {
+      "menuNumber": 137,
+      "name": "Fruit Salad",
+      "category": "Dessert",
+      "priceSmall": 130,
+      "priceMedium": null,
+      "priceLarge": null,
+      "available": true
+    }
+  }
+}
