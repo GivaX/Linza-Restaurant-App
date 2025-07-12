@@ -12,6 +12,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Divider
@@ -28,6 +30,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -57,7 +60,7 @@ import com.google.firebase.firestore.firestore
 
 
 @Composable
-fun MenuScreen(navController: NavController, customerId : String, modifier: Modifier = Modifier) {
+fun MenuScreen(navController: NavController, customerId: String, modifier: Modifier = Modifier) {
     Scaffold(
         topBar = {
             Column {
@@ -75,8 +78,8 @@ fun MenuScreen(navController: NavController, customerId : String, modifier: Modi
 
 @Composable
 fun MenuContent(customerId: String, modifier: Modifier = Modifier) {
-    val viewModel : CustomerViewModel = viewModel()
-    val MenuVM : MenuViewModel = viewModel()
+    val viewModel: CustomerViewModel = viewModel()
+    val MenuVM: MenuViewModel = viewModel()
     val customer by viewModel.getCustomerId(customerId).collectAsState(initial = null)
     Box(modifier.fillMaxSize()) {
         Image(
@@ -108,72 +111,109 @@ fun MenuContent(customerId: String, modifier: Modifier = Modifier) {
     }
 }
 
+data class LookupRequest(
+    val menuNumber: Int,
+    val size: String
+)
+
 @Composable
 fun Menu(modifier: Modifier = Modifier, viewModel: MenuViewModel) {
     var input by remember { mutableStateOf("") }
-    var price by remember { mutableStateOf("") }
-    var itemName by remember { mutableStateOf("") }
-    var selectedSize by remember { mutableStateOf<String?>(null) }
+    //var price by remember { mutableStateOf("") }
+    //var itemName by remember { mutableStateOf("") }
+    //var pendingSize by remember { mutableStateOf<String?>(null) }
+    var lookupRequest by remember { mutableStateOf<LookupRequest?>(null) }
 
+
+    val selectedItems = remember { mutableStateListOf<OrderItem>() }
     val menuItem by viewModel.menuItem.collectAsState()
     val context = LocalContext.current
 
-    LaunchedEffect(menuItem) {
-        selectedSize?.let { size ->
-            menuItem?.let { item ->
-                itemName = item.name
-                price = when (size) {
-                    "S" -> item.priceSmall?.let { "Rs.$it" } ?: run {
-                        Toast.makeText(context, "Item not found", Toast.LENGTH_SHORT).show()
-                        "null"
-                    }
-                    "M" -> item.priceMedium?.let { "Rs.$it" } ?: run {
-                        Toast.makeText(context, "Item not found", Toast.LENGTH_SHORT).show()
-                        "null"
-                    }
-                    "L" -> item.priceLarge?.let { "Rs.$it" } ?: run {
-                        Toast.makeText(context, "Item not found", Toast.LENGTH_SHORT).show()
-                        "null"
-                    }
-                    //"S" -> ":   Rs. ${item.priceSmall}"
-                    //"M" -> ":   Rs. ${item.priceMedium}"
-                    //"L" -> ":   Rs. ${item.priceLarge}"
-                    else -> ""
-                }
-                //selectedSize = null
-            }
+    LaunchedEffect(lookupRequest) {
+        lookupRequest?.let { request ->
+            viewModel.fetchItem(request.menuNumber)
         }
     }
 
-    Box(modifier.fillMaxSize()){
-        Row (Modifier.fillMaxWidth()){
-            Box(modifier = Modifier
-                .weight(2f)
-                .background(color = Color.White)
-                .fillMaxHeight()){
-                Column {
-                    if (price != "null") {
-                        Text(color = Color.Black, text = "$itemName $price")
+    LaunchedEffect(menuItem, lookupRequest) {
+        val request = lookupRequest
+        val item = menuItem
+
+        if (item != null && request != null && item.menuNumber == request.menuNumber) {
+            val selectedPrice = when (request.size) {
+                /*"S" -> item.priceSmall?.let { "Rs.$it" } ?: run {
+                    Toast.makeText(context, "Item not found", Toast.LENGTH_SHORT).show()
+                    "null"
+                }
+                "M" -> item.priceMedium?.let { "Rs.$it" } ?: run {
+                    Toast.makeText(context, "Item not found", Toast.LENGTH_SHORT).show()
+                    "null"
+                }
+                "L" -> item.priceLarge?.let { "Rs.$it" } ?: run {
+                    Toast.makeText(context, "Item not found", Toast.LENGTH_SHORT).show()
+                    "null"
+                }*/
+                "S" -> item.priceSmall
+                "M" -> item.priceMedium
+                "L" -> item.priceLarge
+                else -> null
+            }
+            if (selectedPrice != null) {
+                val newItem = OrderItem(
+                    menuNumber = item.menuNumber,
+                    name = item.name,
+                    size = request.size,
+                    price = selectedPrice,
+                )
+                selectedItems.add(newItem)
+            } else {
+                Toast.makeText(context, "Price not found for that size", Toast.LENGTH_SHORT).show()
+            }
+            lookupRequest = null
+        }
+//        else if (item == null && request != null) {
+//            Toast.makeText(context, "Item not found in menu", Toast.LENGTH_SHORT).show()
+//            lookupRequest = null
+//        }
+    }
+
+    Box(modifier.fillMaxSize()) {
+        Row(Modifier.fillMaxWidth()) {
+            Box(
+                modifier = Modifier
+                    .weight(2f)
+                    .background(color = Color.White)
+                    .fillMaxHeight()
+            ) {
+                LazyColumn {
+                    items(selectedItems) { item ->
+                        Text(
+                            color = Color.Black,
+                            text = "${item.name} (${item.size}) x${item.quantity} - Rs.${item.price}"
+                        )
                     }
                 }
             }
-            Box(modifier = Modifier
-                .weight(2f)
-                .background(color = Color.DarkGray)
-                .fillMaxHeight()){
+            Box(
+                modifier = Modifier
+                    .weight(2f)
+                    .background(color = Color.DarkGray)
+                    .fillMaxHeight()
+            ) {
                 Column(modifier = Modifier.padding(horizontal = 200.dp, vertical = 100.dp)) {
-                    Text(color = Color.White,text = "Enter Menu Number")
+                    Text(color = Color.White, text = "Enter Menu Number")
                     TextField(value = input, onValueChange = { input = it })
                     Numpad { digit ->
                         when (digit) {
                             "<-" -> input = ""
-                            "S","M","L" -> {
+                            "S", "M", "L" -> {
                                 if (input.isNotEmpty()) {
-                                    selectedSize = digit
-                                    viewModel.fetchItem(input.toInt())
+                                    lookupRequest = LookupRequest(input.toInt(), digit)
+                                    //pendingSize = digit
                                     input = ""
                                 }
                             }
+
                             else -> input += digit
                         }
                     }

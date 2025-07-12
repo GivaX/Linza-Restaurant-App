@@ -231,6 +231,14 @@ data class MenuItem(
     val available: Boolean = true
 )
 
+data class OrderItem(
+    val menuNumber: Int,
+    val name: String,
+    val size: String,
+    val price: Int,
+    val quantity: Int = 1
+)
+
 @Composable
 fun CustomTextField(text: String, label:String, textStateChanged: (String) -> Unit) {
     TextField(
