@@ -219,6 +219,8 @@ fun Menu(modifier: Modifier = Modifier, viewModel: MenuViewModel, customer: Cust
                                                             quantity = item.quantity - 1,
                                                             qxp = item.price * (item.quantity - 1)
                                                         )
+                                                } else if (item.quantity == 1) {
+                                                    selectedItems.removeAt(index)
                                                 }
                                             }) { Text("-") }
 
