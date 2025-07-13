@@ -199,7 +199,7 @@ fun Menu(modifier: Modifier = Modifier, viewModel: MenuViewModel, customer: Cust
                         ) {
                             val customerName = customer?.name
                             if (customerName != null) {
-                                Text(color = Color.Blue, text = customerName)
+                                Text(color = Color.Green, text = customerName)
                             } else {
                                 Text(color = Color.Red, text = "No Customer")
                             }
