@@ -236,6 +236,7 @@ data class OrderItem(
     val name: String,
     val size: String,
     val price: Int,
+    val qxp: Int, //Quantity * Price for calculations
     val quantity: Int = 1
 )
 

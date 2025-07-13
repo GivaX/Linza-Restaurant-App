@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Divider
@@ -79,7 +80,7 @@ fun MenuScreen(navController: NavController, customerId: String, modifier: Modif
 @Composable
 fun MenuContent(customerId: String, modifier: Modifier = Modifier) {
     val viewModel: CustomerViewModel = viewModel()
-    val MenuVM: MenuViewModel = viewModel()
+    val menuVM: MenuViewModel = viewModel()
     val customer by viewModel.getCustomerId(customerId).collectAsState(initial = null)
     Box(modifier.fillMaxSize()) {
         Image(
@@ -92,14 +93,14 @@ fun MenuContent(customerId: String, modifier: Modifier = Modifier) {
         )
         Column {
             DateTimeDisplay()
+            val currentCustomer = customer
             if (customer != null)
                 customer?.let {
-                    Text(it.name)
-                    Menu(viewModel = MenuVM)
+                    Menu(viewModel = menuVM, customer = currentCustomer)
                 }
             else {
                 //Text("Testing")
-                Menu(viewModel = MenuVM)
+                Menu(viewModel = menuVM, customer = null)
             }
 
             /*customer?.let {
@@ -117,7 +118,7 @@ data class LookupRequest(
 )
 
 @Composable
-fun Menu(modifier: Modifier = Modifier, viewModel: MenuViewModel) {
+fun Menu(modifier: Modifier = Modifier, viewModel: MenuViewModel, customer: Customer?) {
     var input by remember { mutableStateOf("") }
     //var price by remember { mutableStateOf("") }
     //var itemName by remember { mutableStateOf("") }
@@ -164,6 +165,7 @@ fun Menu(modifier: Modifier = Modifier, viewModel: MenuViewModel) {
                     name = item.name,
                     size = request.size,
                     price = selectedPrice,
+                    qxp = selectedPrice
                 )
                 selectedItems.add(newItem)
             } else {
@@ -185,14 +187,69 @@ fun Menu(modifier: Modifier = Modifier, viewModel: MenuViewModel) {
                     .background(color = Color.White)
                     .fillMaxHeight()
             ) {
-                LazyColumn {
-                    items(selectedItems) { item ->
-                        Text(
-                            color = Color.Black,
-                            text = "${item.name} (${item.size}) x${item.quantity} - Rs.${item.price}"
-                        )
+                Column {
+                    Box(
+                        modifier = Modifier
+                            .weight(3f)
+                            .background(color = Color.Gray)
+                            .fillMaxWidth()
+                    ) {
+                        Column(
+                            modifier = Modifier.fillMaxSize()
+                        ) {
+                            val customerName = customer?.name
+                            if (customerName != null) {
+                                Text(color = Color.Blue, text = customerName)
+                            } else {
+                                Text(color = Color.Red, text = "No Customer")
+                            }
+                            LazyColumn {
+                                itemsIndexed(selectedItems) { index, item ->
+                                    val currentPrice = item.price
+                                    Row {
+                                        Text(
+                                            color = Color.Black,
+                                            text = "${item.name} (${item.size}) x${item.quantity} - Rs.${item.price * item.quantity}"
+                                        )
+                                        Row {
+                                            Button(onClick = {
+                                                if (item.quantity > 1) {
+                                                    selectedItems[index] =
+                                                        item.copy(
+                                                            quantity = item.quantity - 1,
+                                                            qxp = item.price * (item.quantity - 1)
+                                                        )
+                                                }
+                                            }) { Text("-") }
+
+                                            Text("${item.quantity}")
+
+                                            Button(onClick = {
+                                                selectedItems[index] =
+                                                    item.copy(
+                                                        quantity = item.quantity + 1,
+                                                        qxp = item.price * (item.quantity + 1)
+                                                    )
+                                            }) { Text("+") }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .background(color = Color.White)
+                    ) {
+                        var totalPrice = 0
+                        selectedItems.forEach { item ->
+                            totalPrice += item.qxp
+                        }
+                        Text(color = Color.Black, text = "Total Price: Rs.${totalPrice}")
                     }
                 }
+
             }
             Box(
                 modifier = Modifier
