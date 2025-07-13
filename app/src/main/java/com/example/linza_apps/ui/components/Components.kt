@@ -196,6 +196,7 @@ fun EnterDetails() {
                     "name" to name.lowercase(),
                     "phone" to phoneNumber,
                     "address" to address
+
                 )
                 name = ""
                 phoneNumber = ""
