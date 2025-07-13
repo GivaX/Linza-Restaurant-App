@@ -1,5 +1,6 @@
 package com.example.linza_apps.ui.screens
 
+import android.graphics.Paint.Align
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -258,48 +259,65 @@ fun Menu(modifier: Modifier = Modifier, viewModel: MenuViewModel, customer: Cust
                     .background(color = Color.DarkGray)
                     .fillMaxHeight()
             ) {
-                Row (modifier = Modifier.align(Alignment.Center).fillMaxSize()) {
-                    Column(
-                        //modifier = Modifier.padding(horizontal = 200.dp, vertical = 100.dp)
-                    ) {
-                        Text(color = Color.White, text = "Enter Menu Number")
-                        TextField(value = input, onValueChange = { input = it })
-                        Numpad { digit ->
-                            when (digit) {
-                                "<-" -> input = ""
-                                "S", "M", "L" -> {
-                                    if (input.isNotEmpty()) {
-                                        lookupRequest = LookupRequest(input.toInt(), digit)
-                                        //pendingSize = digit
-                                        input = ""
+                Column(modifier = Modifier.align(Alignment.Center)) {
+                    Row {
+                        Column {
+                            Text(color = Color.White, text = "Enter Menu Number")
+                            TextField(value = input, onValueChange = { input = it })
+                            Numpad { digit ->
+                                when (digit) {
+                                    "<-" -> input = ""
+                                    "S", "M", "L" -> {
+                                        if (input.isNotEmpty()) {
+                                            lookupRequest = LookupRequest(input.toInt(), digit)
+                                            //pendingSize = digit
+                                            input = ""
+                                        }
                                     }
-                                }
 
-                                else -> input += digit
+                                    else -> input += digit
+                                }
                             }
                         }
-                    }
-                    Button(onClick = {
-                        //Logic for creating order for each customer
-                        if ( customer != null) {
-                            val customerRef = Firebase.firestore.collection("Customers").document(customer.id)
-                            val orderData = hashMapOf(
-                                "items" to selectedItems,
-                                "total" to totalPrice
-                            )
-                            customerRef.collection("Orders").add(orderData)
-                                 .addOnSuccessListener {
-                                     Toast.makeText(context, "Order Sent", Toast.LENGTH_SHORT).show()
-                                 }
-                                 .addOnFailureListener{
-                                     Toast.makeText(context, "Order not sent", Toast.LENGTH_SHORT).show()
-                                 }
-                            selectedItems.clear()
-                        } else {
-                            Toast.makeText(context, "No Customer to send order", Toast.LENGTH_SHORT).show()
+                        Button(
+                            modifier = Modifier.align(Alignment.CenterVertically),
+                            onClick = {
+                                //Logic for creating order for each customer
+                                if (customer != null) {
+                                    val customerRef =
+                                        Firebase.firestore.collection("Customers")
+                                            .document(customer.id)
+                                    val orderData = hashMapOf(
+                                        "items" to selectedItems,
+                                        "total" to totalPrice
+                                    )
+                                    customerRef.collection("Orders").add(orderData)
+                                        .addOnSuccessListener {
+                                            Toast.makeText(
+                                                context,
+                                                "Order Sent",
+                                                Toast.LENGTH_SHORT
+                                            )
+                                                .show()
+                                        }
+                                        .addOnFailureListener {
+                                            Toast.makeText(
+                                                context,
+                                                "Order not sent",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        }
+                                    selectedItems.clear()
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "No Customer to send order",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
+                            }) {
+                            Text("Send Order")
                         }
-                    }) {
-                        Text("Send Order")
                     }
                 }
             }
