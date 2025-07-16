@@ -12,6 +12,7 @@ import com.example.linza_apps.ui.screens.NewOrderScreen
 import com.example.linza_apps.ui.screens.DeliveryScreen
 import com.example.linza_apps.ui.screens.CustomerScreen
 import com.example.linza_apps.ui.screens.DriverScreen
+import com.example.linza_apps.ui.screens.ViewCustomerScreen
 
 
 sealed class Screen(val route:String) {
@@ -22,6 +23,7 @@ sealed class Screen(val route:String) {
     object Customers : Screen("customers")
     object Drivers : Screen("drivers")
     object AddCustomers : Screen("add_customers")
+    object ViewCustomer : Screen("view_customer/{customerId}")
 }
 
 @Composable
@@ -41,5 +43,11 @@ fun AppNavigation(modifier: Modifier = Modifier) {
         composable(Screen.Customers.route) {CustomerScreen(navController)}
         composable(Screen.Drivers.route) {DriverScreen(navController)}
         composable(Screen.AddCustomers.route) { AddCustomerScreen(navController) }
+        composable(Screen.ViewCustomer.route) { backStackEntry ->
+            val cusId = backStackEntry.arguments?.getString("customerId")
+            if (cusId != null) {
+                ViewCustomerScreen(navController, cusId)
+            }
+        }
     }
 }
