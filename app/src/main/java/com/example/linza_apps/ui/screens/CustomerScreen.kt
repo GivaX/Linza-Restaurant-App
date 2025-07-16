@@ -15,6 +15,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
+import androidx.compose.material3.Button
 import androidx.compose.material3.ExtendedFloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.OutlinedTextField
@@ -36,6 +37,7 @@ import androidx.navigation.NavController
 import com.example.linza_apps.R
 import com.example.linza_apps.navigation.Screen
 import com.example.linza_apps.ui.components.AppBar
+import com.example.linza_apps.ui.components.CustomerLookup
 import com.example.linza_apps.ui.components.CustomerViewModel
 import com.example.linza_apps.ui.components.DateTimeDisplay
 import com.example.linza_apps.ui.components.Tabs
@@ -72,71 +74,11 @@ fun CustomerContent(navController: NavController, modifier: Modifier = Modifier)
         )
         Column {
             DateTimeDisplay()
-            CustomerLookup1(navController)
-        }
-    }
-}
-
-@Composable
-fun CustomerSearchBar1(viewModel: CustomerViewModel = viewModel(), navController: NavController, modifier: Modifier = Modifier) {
-    val searchQuery by remember { mutableStateOf(viewModel.searchQuery) }
-    val results by viewModel.searchResults
-
-    Column(modifier = Modifier.padding(75.dp)) {
-        OutlinedTextField(
-            value = viewModel.searchQuery,
-            onValueChange = { viewModel.onSearchChange(it)},
-            label = { Text("Search Customers") },
-            leadingIcon = {
-                Icon(Icons.Default.Search, contentDescription = "Search Icon")
-            },
-            shape = RoundedCornerShape(20.dp),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        //Spacer(Modifier.height(10.dp))
-
-        LazyColumn {
-            items(results) { customer ->
-                Column (
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                        .clickable { navController.navigate("view_customer/${customer.id}") }
-                ){
-                    Text(
-                        "${customer.name} - ${customer.phone}",
-                    )
-                    Log.e("Debug", "$customer.name = $customer.phone")
-                }
+            Button(onClick = { navController.navigate("view_customer/rsIiaWQEcN0xb1SV5kcs") }) {
+                Text("Test Button")
             }
-        }
-    }
-}
+            CustomerLookup(navController, "Customers")
 
-@Composable
-fun CustomerLookup1(navController: NavController, modifier: Modifier = Modifier) {
-    Box(
-        modifier
-            .fillMaxSize()
-        ,
-    ) {
-        CustomerSearchBar1(navController = navController)
-        ExtendedFloatingActionButton(
-            onClick = {
-                navController.navigate(Screen.AddCustomers.route) {
-                    popUpTo(Screen.AddCustomers.route) {
-                        saveState = true
-                        inclusive = true
-                    }
-                    launchSingleTop = true
-                }
-            },
-            icon = { Icon(Icons.Filled.Add, "Add") },
-            text = { Text("Add New Customer") },
-            modifier = Modifier
-                .padding(all = 15.dp)
-                .align(alignment = Alignment.BottomEnd)
-        )
+        }
     }
 }

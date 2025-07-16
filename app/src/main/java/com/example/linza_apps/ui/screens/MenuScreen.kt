@@ -59,6 +59,7 @@ import com.google.firebase.firestore.firestore
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
+import java.time.LocalDateTime
 
 
 @Composable
@@ -96,9 +97,9 @@ fun MenuContent(customerId: String, modifier: Modifier = Modifier) {
             DateTimeDisplay()
             val currentCustomer = customer
             if (customer != null)
-                customer?.let {
-                    Menu(viewModel = menuVM, customer = currentCustomer)
-                }
+            //customer?.let {
+                Menu(viewModel = menuVM, customer = currentCustomer)
+            //}
             else {
                 //Text("Testing")
                 Menu(viewModel = menuVM, customer = null)
@@ -283,13 +284,14 @@ fun Menu(modifier: Modifier = Modifier, viewModel: MenuViewModel, customer: Cust
                             modifier = Modifier.align(Alignment.CenterVertically),
                             onClick = {
                                 //Logic for creating order for each customer
-                                if (customer != null) {
+                                if (customer != null && totalPrice != 0) {
                                     val customerRef =
                                         Firebase.firestore.collection("Customers")
                                             .document(customer.id)
                                     val orderData = hashMapOf(
                                         "items" to selectedItems,
-                                        "total" to totalPrice
+                                        "total" to totalPrice,
+                                        "date" to getTimeForOrder()
                                     )
                                     customerRef.collection("Orders").add(orderData)
                                         .addOnSuccessListener {
@@ -308,10 +310,16 @@ fun Menu(modifier: Modifier = Modifier, viewModel: MenuViewModel, customer: Cust
                                             ).show()
                                         }
                                     selectedItems.clear()
-                                } else {
+                                } else if (customer == null) {
                                     Toast.makeText(
                                         context,
                                         "No Customer to send order",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                } else {
+                                    Toast.makeText(
+                                        context,
+                                        "No items added to send order",
                                         Toast.LENGTH_SHORT
                                     ).show()
                                 }

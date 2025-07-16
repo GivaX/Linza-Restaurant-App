@@ -11,8 +11,12 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.input.TextFieldState
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
@@ -39,12 +43,15 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.linza_apps.navigation.Screen
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
+import com.google.firestore.v1.StructuredQuery.Order
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -53,6 +60,9 @@ import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 import java.text.SimpleDateFormat
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
 import java.util.Date
 import java.util.Locale
 
@@ -167,6 +177,93 @@ fun getCurrentTime(): String {
     return sdf.format(Date())
 }
 
+fun getTimeForOrder(): String {
+    val date = LocalDateTime.now()
+    return date.format(DateTimeFormatter.ofPattern("dd/MM/yyyy hh:mm a"))
+}
+
+@Composable
+fun CustomerLookup(navController: NavController,flag: String, modifier: Modifier = Modifier) {
+    Box(
+        modifier
+            .fillMaxSize()
+        ,
+    ) {
+        CustomerSearchBar(navController = navController, flag = flag)
+        ExtendedFloatingActionButton(
+            onClick = {
+                navController.navigate(Screen.AddCustomers.route) {
+                    popUpTo(Screen.AddCustomers.route) {
+                        saveState = true
+                        inclusive = true
+                    }
+                    launchSingleTop = true
+                }
+            },
+            icon = { Icon(Icons.Filled.Add, "Add") },
+            text = { Text("Add New Customer") },
+            modifier = Modifier
+                .padding(all = 15.dp)
+                .align(alignment = Alignment.BottomEnd)
+        )
+    }
+}
+
+@Composable
+fun CustomerSearchBar(viewModel: CustomerViewModel = viewModel(), navController: NavController, flag: String, modifier: Modifier = Modifier) {
+    val searchQuery by remember { mutableStateOf(viewModel.searchQuery) }
+    val results by viewModel.searchResults
+
+    Column(modifier = Modifier.padding(75.dp)) {
+        OutlinedTextField(
+            value = viewModel.searchQuery,
+            onValueChange = { viewModel.onSearchChange(it)},
+            label = { Text("Search Customers") },
+            leadingIcon = {
+                Icon(Icons.Default.Search, contentDescription = "Search Icon")
+            },
+            shape = RoundedCornerShape(20.dp),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        //Spacer(Modifier.height(10.dp))
+
+        if (flag == "Menu") {
+            LazyColumn {
+                items(results) { customer ->
+                    Column (
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                            .clickable { navController.navigate("menu/${customer.id}") }
+                    ){
+                        Text(
+                            "${customer.name} - ${customer.phone}",
+                        )
+                        Log.e("Debug", "$customer.name = $customer.phone")
+                    }
+                }
+            }
+        } else if (flag == "Customers") {
+            LazyColumn {
+                items(results) { customer ->
+                    Column (
+                        Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                            .clickable { navController.navigate("view_customer/${customer.id}") }
+                    ){
+                        Text(
+                            "${customer.name} - ${customer.phone}",
+                        )
+                        Log.e("Debug", "$customer.name = $customer.phone")
+                    }
+                }
+            }
+        }
+    }
+}
+
 @Preview
 @Composable
 fun EnterDetails() {
@@ -196,7 +293,6 @@ fun EnterDetails() {
                     "name" to name.lowercase(),
                     "phone" to phoneNumber,
                     "address" to address
-
                 )
                 name = ""
                 phoneNumber = ""
@@ -233,11 +329,11 @@ data class MenuItem(
 )
 
 data class OrderItem(
-    val menuNumber: Int,
-    val name: String,
-    val size: String,
-    val price: Int,
-    val qxp: Int, //Quantity * Price for calculations
+    val menuNumber: Int = 0,
+    val name: String = "",
+    val size: String = "",
+    val price: Int = 0,
+    val qxp: Int = 0, //Quantity * Price for calculations
     val quantity: Int = 1
 )
 
@@ -259,6 +355,11 @@ data class Customer (
     val address: String = ""
 )
 
+data class OrderItemsList(
+    val date: String = "",
+    val items: List<OrderItem> = emptyList(),
+    val total: Int = 0
+)
 
 class CustomerViewModel : ViewModel() {
     var searchQuery by mutableStateOf("")
@@ -289,8 +390,31 @@ class CustomerViewModel : ViewModel() {
     }
 
     fun getCustomerId(customerId : String): Flow<Customer?> = flow {
-        val snapshot = db.collection("Customers").document(customerId).get().await()
+        val snapshot = db.collection("Customers")
+            .document(customerId)
+            .get()
+            .await()
         emit(snapshot.toObject(Customer::class.java))
+    }
+
+    fun getCustomerOrders(customerId: String): Flow<List<OrderItemsList>> = flow {
+        val snapshot = db.collection("Customers")
+            .document(customerId)
+            .collection("Orders")
+            .orderBy("date", Query.Direction.DESCENDING)
+            .get()
+            .await()
+
+        val orders = snapshot.documents.mapNotNull { doc ->
+            try {
+                val order = doc.toObject(OrderItemsList::class.java)
+                order
+            } catch (e: Exception) {
+                null
+            }
+        }
+
+        emit(orders)
     }
 }
 

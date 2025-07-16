@@ -104,71 +104,7 @@ fun NewOrderContent(navController: NavController, modifier: Modifier = Modifier)
         )
         Column {
             DateTimeDisplay()
-            CustomerLookup(navController)
+            CustomerLookup(navController, "Menu")
         }
-    }
-}
-
-@Composable
-fun CustomerSearchBar(viewModel: CustomerViewModel = viewModel(), navController: NavController, modifier: Modifier = Modifier) {
-    val searchQuery by remember { mutableStateOf(viewModel.searchQuery) }
-    val results by viewModel.searchResults
-
-    Column(modifier = Modifier.padding(75.dp)) {
-        OutlinedTextField(
-            value = viewModel.searchQuery,
-            onValueChange = { viewModel.onSearchChange(it)},
-            label = { Text("Search Customers") },
-            leadingIcon = {
-                Icon(Icons.Default.Search, contentDescription = "Search Icon")
-            },
-            shape = RoundedCornerShape(20.dp),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        //Spacer(Modifier.height(10.dp))
-
-        LazyColumn {
-            items(results) { customer ->
-                Column (
-                    Modifier
-                        .fillMaxWidth()
-                        .padding(8.dp)
-                        .clickable { navController.navigate("menu/${customer.id}") }
-                ){
-                    Text(
-                        "${customer.name} - ${customer.phone}",
-                    )
-                    Log.e("Debug", "$customer.name = $customer.phone")
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun CustomerLookup(navController: NavController, modifier: Modifier = Modifier) {
-    Box(
-        modifier
-            .fillMaxSize()
-            ,
-    ) {
-        CustomerSearchBar(navController = navController)
-        ExtendedFloatingActionButton(
-            onClick = {
-                navController.navigate(Screen.AddCustomers.route) {
-                    popUpTo(Screen.AddCustomers.route) {
-                        saveState = true
-                        inclusive = true
-                    }
-                    launchSingleTop = true
-                }
-            },
-            icon = { Icon(Icons.Filled.Add, "Add") },
-            text = { Text("Add New Customer") },
-            modifier = Modifier
-                .padding(all = 15.dp)
-                .align(alignment = Alignment.BottomEnd)
-        )
     }
 }
