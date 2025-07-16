@@ -2,6 +2,7 @@ package com.example.linza_apps.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -16,6 +18,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,6 +32,7 @@ import com.example.linza_apps.R
 import com.example.linza_apps.ui.components.AppBar
 import com.example.linza_apps.ui.components.CustomerViewModel
 import com.example.linza_apps.ui.components.DateTimeDisplay
+import com.example.linza_apps.ui.components.OrderItemsList
 import com.example.linza_apps.ui.components.Tabs
 import com.google.firebase.Firebase
 
@@ -79,6 +85,8 @@ fun ViewCustomerBox(customerId: String, modifier: Modifier = Modifier) {
     val cus by viewModel.getCustomerId(customerId).collectAsState(null)
     val orders by viewModel.getCustomerOrders(customerId).collectAsState(emptyList())
     val customer = cus
+    var selectedOrder by remember { mutableStateOf<OrderItemsList?>(null) }
+
     //if (customer != null){
     Column(Modifier.fillMaxSize()) {
         Box(Modifier
@@ -111,11 +119,35 @@ fun ViewCustomerBox(customerId: String, modifier: Modifier = Modifier) {
                     Column {
                         Box(Modifier
                             .weight(3f)
-                            .fillMaxSize()) { }
+                            .fillMaxSize()) {
+                            selectedOrder?.let { order ->
+                                Column {
+                                    Text(
+                                        color = Color.Black,
+                                        text = "Ordered on: ${order.date}"
+                                    )
+                                    LazyColumn {
+                                        itemsIndexed(order.items) { index, item ->
+                                            Text(
+                                                color = Color.Black,
+                                                text = "${index+1}. ${item.name} (${item.size}) x${item.quantity} - Rs.${item.price * item.quantity}"
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
                         Box(Modifier
                             .weight(1f)
                             .background(Color.White)
-                            .fillMaxSize()) { }
+                            .fillMaxSize()) {
+                            selectedOrder?.let { order->
+                                Text(
+                                    color = Color.Black,
+                                    text = "Total Price: Rs.${order.total}"
+                                )
+                            }
+                        }
                     }
                 }
                 Box(Modifier
@@ -141,6 +173,9 @@ fun ViewCustomerBox(customerId: String, modifier: Modifier = Modifier) {
                             LazyColumn {
                                 items(orders) { order ->
                                     Text(
+                                        modifier = Modifier.clickable {
+                                            selectedOrder = order
+                                        },
                                         text = "Order Date: ${order.date}",
                                         color = Color.Black
                                     )
