@@ -290,7 +290,7 @@ fun EnterDetails() {
 
                 val customer = hashMapOf(
                     "id" to customerRef.id,
-                    "name" to name.lowercase(),
+                    "name" to name.trim().lowercase(),
                     "phone" to phoneNumber,
                     "address" to address
                 )
