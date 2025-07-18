@@ -74,9 +74,6 @@ fun CustomerContent(navController: NavController, modifier: Modifier = Modifier)
         )
         Column {
             DateTimeDisplay()
-            Button(onClick = { navController.navigate("view_customer/rsIiaWQEcN0xb1SV5kcs") }) {
-                Text("Test Button")
-            }
             CustomerLookup(navController, "Customers")
 
         }

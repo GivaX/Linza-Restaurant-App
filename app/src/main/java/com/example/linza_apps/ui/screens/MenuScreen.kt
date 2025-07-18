@@ -59,6 +59,7 @@ import com.google.firebase.firestore.firestore
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
+import kotlinx.coroutines.tasks.await
 import java.time.LocalDateTime
 
 
@@ -131,6 +132,7 @@ fun Menu(modifier: Modifier = Modifier, viewModel: MenuViewModel, customer: Cust
     val selectedItems = remember { mutableStateListOf<OrderItem>() }
     val menuItem by viewModel.menuItem.collectAsState()
     val context = LocalContext.current
+    var menuFlag by remember { mutableStateOf(false) }
 
     LaunchedEffect(lookupRequest) {
         lookupRequest?.let { request ->
@@ -254,77 +256,96 @@ fun Menu(modifier: Modifier = Modifier, viewModel: MenuViewModel, customer: Cust
                 }
 
             }
+            LaunchedEffect(menuFlag) { }
             Box(
                 modifier = Modifier
                     .weight(2f)
                     .background(color = Color.DarkGray)
                     .fillMaxHeight()
             ) {
-                Column(modifier = Modifier.align(Alignment.Center)) {
-                    Row {
-                        Column {
-                            Text(color = Color.White, text = "Enter Menu Number")
-                            TextField(value = input, onValueChange = { input = it })
-                            Numpad { digit ->
-                                when (digit) {
-                                    "<-" -> input = ""
-                                    "S", "M", "L" -> {
-                                        if (input.isNotEmpty()) {
-                                            lookupRequest = LookupRequest(input.toInt(), digit)
-                                            //pendingSize = digit
-                                            input = ""
+                if (!menuFlag) {
+                    Column(modifier = Modifier.align(Alignment.Center)) {
+                        Row {
+                            Column {
+                                Text(color = Color.White, text = "Enter Menu Number")
+                                TextField(value = input, onValueChange = { input = it })
+                                Numpad { digit ->
+                                    when (digit) {
+                                        "<-" -> input = ""
+                                        "S", "M", "L" -> {
+                                            if (input.isNotEmpty()) {
+                                                lookupRequest = LookupRequest(input.toInt(), digit)
+                                                //pendingSize = digit
+                                                input = ""
+                                            }
                                         }
-                                    }
 
-                                    else -> input += digit
+                                        else -> input += digit
+                                    }
                                 }
                             }
-                        }
-                        Button(
-                            modifier = Modifier.align(Alignment.CenterVertically),
-                            onClick = {
-                                //Logic for creating order for each customer
-                                if (customer != null && totalPrice != 0) {
-                                    val customerRef =
-                                        Firebase.firestore.collection("Customers")
-                                            .document(customer.id)
-                                    val orderData = hashMapOf(
-                                        "items" to selectedItems,
-                                        "total" to totalPrice,
-                                        "date" to getTimeForOrder()
-                                    )
-                                    customerRef.collection("Orders").add(orderData)
-                                        .addOnSuccessListener {
-                                            Toast.makeText(
-                                                context,
-                                                "Order Sent",
-                                                Toast.LENGTH_SHORT
+                            Column(modifier = Modifier.align(Alignment.CenterVertically)) {
+                                Button(
+                                    //modifier = Modifier.align(Alignment.CenterVertically),
+                                    onClick = {
+                                        //Logic for creating order for each customer
+                                        if (customer != null && totalPrice != 0) {
+                                            val customerRef =
+                                                Firebase.firestore.collection("Customers")
+                                                    .document(customer.id)
+                                            val orderData = hashMapOf(
+                                                "items" to selectedItems,
+                                                "total" to totalPrice,
+                                                "date" to getTimeForOrder()
                                             )
-                                                .show()
-                                        }
-                                        .addOnFailureListener {
+                                            customerRef.collection("Orders").add(orderData)
+                                                .addOnSuccessListener {
+                                                    Toast.makeText(
+                                                        context,
+                                                        "Order Sent",
+                                                        Toast.LENGTH_SHORT
+                                                    )
+                                                        .show()
+                                                }
+                                                .addOnFailureListener {
+                                                    Toast.makeText(
+                                                        context,
+                                                        "Order not sent",
+                                                        Toast.LENGTH_SHORT
+                                                    ).show()
+                                                }
+                                            selectedItems.clear()
+                                        } else if (customer == null) {
                                             Toast.makeText(
                                                 context,
-                                                "Order not sent",
+                                                "No Customer to send order",
+                                                Toast.LENGTH_SHORT
+                                            ).show()
+                                        } else {
+                                            Toast.makeText(
+                                                context,
+                                                "No items added to send order",
                                                 Toast.LENGTH_SHORT
                                             ).show()
                                         }
-                                    selectedItems.clear()
-                                } else if (customer == null) {
-                                    Toast.makeText(
-                                        context,
-                                        "No Customer to send order",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
-                                } else {
-                                    Toast.makeText(
-                                        context,
-                                        "No items added to send order",
-                                        Toast.LENGTH_SHORT
-                                    ).show()
+                                    }) {
+                                    Text("Send Order")
                                 }
-                            }) {
-                            Text("Send Order")
+                                Button(onClick = { menuFlag = true }) { Text("View Full Menu") }
+                            }
+                        }
+                    }
+                } else {
+                    val menuItems by viewModel.fetchMenu().collectAsState(emptyList())
+                    Box(Modifier.fillMaxSize()) {
+                        Column {
+                            LazyColumn(Modifier.padding(10.dp).weight(1f)) {
+                                items(menuItems) { item ->
+                                    Text("${item.menuNumber}. ${item.name} - Prices: S- Rs.${item.priceSmall}, M- Rs.${item.priceMedium}, L- Rs.${item.priceLarge}")
+                                    // can add functionality where when pressing a S/M/L on an item it is added to order
+                                }
+                            }
+                            Button(onClick = { menuFlag = false } ) { Text("<- Back") }
                         }
                     }
                 }
@@ -332,18 +353,6 @@ fun Menu(modifier: Modifier = Modifier, viewModel: MenuViewModel, customer: Cust
         }
 
     }
-}
-
-@Preview
-@Composable
-fun Items() {
-
-}
-
-@Preview
-@Composable
-fun OrderDisplay() {
-
 }
 
 

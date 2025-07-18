@@ -33,6 +33,7 @@ import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -447,5 +448,22 @@ class MenuViewModel : ViewModel() {
                 val item = snapshot.documents.firstOrNull()?.toObject(MenuItem::class.java)
                 _menuItem.value = item
             }
+    }
+
+    fun fetchMenu(): Flow<List<MenuItem>> = flow {
+
+        val menuRef = Firebase.firestore
+            .collection("Menu")
+            .get()
+            .await()
+        val items = menuRef.documents.mapNotNull { doc ->
+            try {
+                val item = doc.toObject(MenuItem::class.java)
+                item
+            } catch (e: Exception) {
+                null
+            }
+        }
+        emit(items)
     }
 }

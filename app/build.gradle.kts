@@ -4,6 +4,8 @@ plugins {
     alias(libs.plugins.kotlin.compose)
     //id("com.android.application")
     id("com.google.gms.google-services")
+    id("kotlin-kapt")
+
 }
 
 android {
@@ -68,9 +70,14 @@ dependencies {
     implementation("com.google.firebase:firebase-analytics")
     // Add the dependencies for any other desired Firebase products
     // https://firebase.google.com/docs/android/setup#available-libraries
-    implementation("com.google.firebase:firebase-firestore")
+    implementation("com.google.firebase:firebase-firestore-ktx")
     implementation("com.google.code.gson:gson:2.10.1")
     implementation("org.json:json:20230227")
+    // Room
+    implementation ("androidx.room:room-runtime:2.6.1")
+    kapt ("androidx.room:room-compiler:2.6.1")
+    implementation ("androidx.room:room-ktx:2.6.1")
+
 
 
 }
