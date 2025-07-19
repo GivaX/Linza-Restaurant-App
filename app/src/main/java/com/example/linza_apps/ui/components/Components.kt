@@ -2,6 +2,9 @@ package com.example.linza_apps.ui.components
 
 import android.location.Address
 import android.util.Log
+import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,7 +13,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -40,13 +45,25 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.focus.FocusRequester
+import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.zIndex
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.linza_apps.navigation.Screen
+import com.google.android.libraries.places.api.Places
+import com.google.android.libraries.places.api.model.AutocompletePrediction
+import com.google.android.libraries.places.api.model.AutocompleteSessionToken
+import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.Query
@@ -184,11 +201,10 @@ fun getTimeForOrder(): String {
 }
 
 @Composable
-fun CustomerLookup(navController: NavController,flag: String, modifier: Modifier = Modifier) {
+fun CustomerLookup(navController: NavController, flag: String, modifier: Modifier = Modifier) {
     Box(
         modifier
-            .fillMaxSize()
-        ,
+            .fillMaxSize(),
     ) {
         CustomerSearchBar(navController = navController, flag = flag)
         ExtendedFloatingActionButton(
@@ -211,14 +227,19 @@ fun CustomerLookup(navController: NavController,flag: String, modifier: Modifier
 }
 
 @Composable
-fun CustomerSearchBar(viewModel: CustomerViewModel = viewModel(), navController: NavController, flag: String, modifier: Modifier = Modifier) {
+fun CustomerSearchBar(
+    viewModel: CustomerViewModel = viewModel(),
+    navController: NavController,
+    flag: String,
+    modifier: Modifier = Modifier
+) {
     val searchQuery by remember { mutableStateOf(viewModel.searchQuery) }
     val results by viewModel.searchResults
 
     Column(modifier = Modifier.padding(75.dp)) {
         OutlinedTextField(
             value = viewModel.searchQuery,
-            onValueChange = { viewModel.onSearchChange(it)},
+            onValueChange = { viewModel.onSearchChange(it) },
             label = { Text("Search Customers") },
             leadingIcon = {
                 Icon(Icons.Default.Search, contentDescription = "Search Icon")
@@ -232,12 +253,12 @@ fun CustomerSearchBar(viewModel: CustomerViewModel = viewModel(), navController:
         if (flag == "Menu") {
             LazyColumn {
                 items(results) { customer ->
-                    Column (
+                    Column(
                         Modifier
                             .fillMaxWidth()
                             .padding(8.dp)
                             .clickable { navController.navigate("menu/${customer.id}") }
-                    ){
+                    ) {
                         Text(
                             "${customer.name} - ${customer.phone}",
                         )
@@ -248,16 +269,111 @@ fun CustomerSearchBar(viewModel: CustomerViewModel = viewModel(), navController:
         } else if (flag == "Customers") {
             LazyColumn {
                 items(results) { customer ->
-                    Column (
+                    Column(
                         Modifier
                             .fillMaxWidth()
                             .padding(8.dp)
                             .clickable { navController.navigate("view_customer/${customer.id}") }
-                    ){
+                    ) {
                         Text(
                             "${customer.name} - ${customer.phone}",
                         )
                         Log.e("Debug", "$customer.name = $customer.phone")
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun LocationSearchField(
+    modifier: Modifier = Modifier,
+    address: String,
+    onQueryChange: (String) -> Unit,
+    onPlaceSelected: (String) -> Unit
+) {
+    val context = LocalContext.current
+    val placesClient = remember { Places.createClient(context) }
+
+    var predictions by remember { mutableStateOf<List<AutocompletePrediction>>(emptyList()) }
+    var expanded by remember { mutableStateOf(false) }
+
+    val focusManager = LocalFocusManager.current
+
+    // 1st APPROACH
+
+    LaunchedEffect(address) {
+        if (address.length > 2) {
+            val request = FindAutocompletePredictionsRequest.builder()
+                .setQuery(address)
+                .build()
+            placesClient.findAutocompletePredictions(request)
+                .addOnSuccessListener { response ->
+                    predictions = response.autocompletePredictions
+                    expanded = true
+                }
+                .addOnFailureListener { response ->
+                    predictions = emptyList()
+                    expanded = false
+                }
+        } else {
+            predictions = emptyList()
+            expanded = false
+        }
+    }
+
+    Box() {
+        Column() {
+            TextField(
+                value = address,
+                onValueChange = onQueryChange,
+                label = { Text("Address") },
+                singleLine = true,
+                modifier = Modifier
+                    .zIndex(2f)
+                    .width(300.dp)
+            )
+            if (expanded) {
+                Popup(
+                    alignment = Alignment.TopEnd,
+                    offset = IntOffset(0, 115),
+                    onDismissRequest = {
+                        expanded = false
+                    }
+                ) {
+                    LazyColumn(
+                        modifier = Modifier
+                            .background(
+                                MaterialTheme.colorScheme.primaryContainer,
+                                shape = RoundedCornerShape(4.dp)
+                            )
+                            .border(
+                                1.dp,
+                                MaterialTheme.colorScheme.secondary,
+                                shape = RoundedCornerShape(4.dp)
+                            )
+                            .zIndex(1f)
+                            .padding(horizontal = 4.dp)
+                            .animateContentSize()
+                            .width(295.dp)
+                    ) {
+                        items(predictions.take(3)) { prediction ->
+
+                            Text(
+                                modifier = Modifier
+                                    .clickable {
+                                        val selectedLoc = prediction.getFullText(null).toString()
+                                        onQueryChange(selectedLoc)
+                                        onPlaceSelected(selectedLoc)
+                                        expanded = false
+                                        focusManager.clearFocus()
+                                    }
+                                    .padding(12.dp),
+                                text = prediction.getFullText(null).toString()
+                            )
+                            HorizontalDivider(color = MaterialTheme.colorScheme.secondary)
+                        }
                     }
                 }
             }
@@ -277,14 +393,20 @@ fun EnterDetails() {
 
     Box(
         modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center) {
+        contentAlignment = Alignment.Center
+    ) {
         SnackbarHost(hostState = snackbarHostState, Modifier.align(Alignment.BottomEnd))
         Column {
             CustomTextField(name, "Name", { newText -> name = newText })
             //Spacer(modifier = Modifier.padding(all = 10.dp))
             CustomTextField(phoneNumber, "Phone Number", { newText -> phoneNumber = newText })
             //Spacer(modifier = Modifier.padding(all = 10.dp))
-            CustomTextField(address, "Address", { newText -> address = newText })
+            //CustomTextField(address, "Address", { newText -> address = newText })
+            LocationSearchField(
+                address = address,
+                onQueryChange = { address = it },
+                onPlaceSelected = { selected -> address = selected }
+            )
             Button(onClick = {
 
                 val customerRef = db.collection("Customers").document()
@@ -339,17 +461,17 @@ data class OrderItem(
 )
 
 @Composable
-fun CustomTextField(text: String, label:String, textStateChanged: (String) -> Unit) {
+fun CustomTextField(text: String, label: String, textStateChanged: (String) -> Unit) {
     TextField(
         value = text,
-        onValueChange = { newText -> textStateChanged(newText)},
+        onValueChange = { newText -> textStateChanged(newText) },
         label = { Text(label) },
         singleLine = true,
         modifier = Modifier.padding(all = 15.dp)
     )
 }
 
-data class Customer (
+data class Customer(
     val id: String = "",
     val name: String = "",
     val phone: String = "",
@@ -367,9 +489,9 @@ class CustomerViewModel : ViewModel() {
     var searchResults = mutableStateOf<List<Customer>>(emptyList())
     private val db = Firebase.firestore
 
-    fun onSearchChange(query: String){
+    fun onSearchChange(query: String) {
         searchQuery = query
-        if (query.isNotEmpty()){
+        if (query.isNotEmpty()) {
             searchCustomers(query)
         } else {
             searchResults.value = emptyList()
@@ -390,7 +512,7 @@ class CustomerViewModel : ViewModel() {
             }
     }
 
-    fun getCustomerId(customerId : String): Flow<Customer?> = flow {
+    fun getCustomerId(customerId: String): Flow<Customer?> = flow {
         val snapshot = db.collection("Customers")
             .document(customerId)
             .get()
@@ -422,15 +544,18 @@ class CustomerViewModel : ViewModel() {
 @Composable
 fun Numpad(onDigit: (String) -> Unit) {
     Column {
-        listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0","<-", "S", "M", "L").chunked(3).forEach { row ->
-            Row {
-                row.forEach { digit ->
-                    Button(modifier = Modifier.padding(horizontal = 3.dp), onClick = { onDigit(digit) }) {
-                        Text(digit)
+        listOf("1", "2", "3", "4", "5", "6", "7", "8", "9", "", "0", "<-", "S", "M", "L").chunked(3)
+            .forEach { row ->
+                Row {
+                    row.forEach { digit ->
+                        Button(
+                            modifier = Modifier.padding(horizontal = 3.dp),
+                            onClick = { onDigit(digit) }) {
+                            Text(digit)
+                        }
                     }
                 }
             }
-        }
     }
 }
 
@@ -438,9 +563,9 @@ class MenuViewModel : ViewModel() {
     private val db = Firebase.firestore
 
     val _menuItem = MutableStateFlow<MenuItem?>(null)
-    val menuItem : StateFlow<MenuItem?> = _menuItem
+    val menuItem: StateFlow<MenuItem?> = _menuItem
 
-    fun fetchItem(menuNum : Int) {
+    fun fetchItem(menuNum: Int) {
         db.collection("Menu")
             .whereEqualTo("menuNumber", menuNum)
             .get()

@@ -38,6 +38,7 @@ import com.example.linza_apps.ui.components.AppBar
 import com.example.linza_apps.ui.components.CustomTextField
 import com.example.linza_apps.ui.components.CustomerViewModel
 import com.example.linza_apps.ui.components.DateTimeDisplay
+import com.example.linza_apps.ui.components.LocationSearchField
 import com.example.linza_apps.ui.components.OrderItemsList
 import com.example.linza_apps.ui.components.Tabs
 import com.google.firebase.Firebase
@@ -116,10 +117,10 @@ fun ViewCustomerBox(customerId: String, modifier: Modifier = Modifier) {
                         onValueChange = { updatePhone = it },
                         label = { Text("Phone Number") }
                     )
-                    OutlinedTextField(
-                        value = updateAddress,
-                        onValueChange = { updateAddress = it },
-                        label = { Text("Address") }
+                    LocationSearchField(
+                        address = updateAddress,
+                        onQueryChange = { updateAddress = it },
+                        onPlaceSelected = { selected -> updateAddress = selected }
                     )
                 }
             },
