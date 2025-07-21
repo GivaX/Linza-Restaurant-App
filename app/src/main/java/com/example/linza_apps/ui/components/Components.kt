@@ -248,7 +248,6 @@ fun AddCustomerDialog(
     var name by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
-    val scope = rememberCoroutineScope()
     val context = LocalContext.current
 
     val db = FirebaseFirestore.getInstance()
@@ -662,6 +661,35 @@ class CustomerViewModel : ViewModel() {
         }
 
         emit(orders)
+    }
+}
+
+data class Driver(
+    val name: String = "",
+    val phone: Long = 0
+)
+
+class DriverViewModel : ViewModel() {
+    private val db = Firebase.firestore
+
+    //val _drivers = MutableStateFlow<Driver?>(null)
+    //val drivers: StateFlow<Driver?> = _drivers
+
+    fun fetchDrivers(): Flow<List<Driver>> = flow {
+        val driverRef = db.collection("Drivers")
+            .orderBy("name", Query.Direction.ASCENDING)
+            .get()
+            .await()
+
+        val items = driverRef.documents.mapNotNull { doc ->
+            try {
+                val item = doc.toObject(Driver::class.java)
+                item
+            } catch (e: Exception) {
+                null
+            }
+        }
+        emit(items)
     }
 }
 
