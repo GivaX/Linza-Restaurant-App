@@ -15,6 +15,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.navigation.NavController
 import com.example.linza_apps.R
 import com.example.linza_apps.ui.components.AppBar
+import com.example.linza_apps.ui.components.DateTimeDisplay
 import com.example.linza_apps.ui.components.Tabs
 import com.example.linza_apps.ui.screens.NewOrderContent
 
@@ -30,7 +31,31 @@ fun DriverScreen(navController: NavController, modifier: Modifier = Modifier) {
         },
         //contentWindowInsets = WindowInsets(0, 0, 0, 0),
         content = { innerPadding ->
-            NewOrderContent(navController, Modifier.padding(innerPadding))
+            DriverContent(navController, Modifier.padding(innerPadding))
         }
     )
+}
+
+@Composable
+fun DriverContent(
+    navController: NavController,
+    modifier: Modifier = Modifier) {
+    Box(modifier.fillMaxSize()) {
+        Image(
+            painter = painterResource(id = R.drawable.linza_background), // Replace with your PNG
+            contentDescription = "Background",
+            contentScale = ContentScale.Fit, // Choose how the image fills the space
+            modifier = Modifier
+                .fillMaxSize()
+                .background(color = Color(0xFF0D111C))
+        )
+        Column {
+            DateTimeDisplay()
+        }
+    }
+}
+
+@Composable
+fun Drivers(modifier: Modifier = Modifier) {
+
 }

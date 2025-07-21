@@ -304,8 +304,7 @@ fun Menu(modifier: Modifier = Modifier, viewModel: MenuViewModel, customer: Cust
                                                         context,
                                                         "Order Sent",
                                                         Toast.LENGTH_SHORT
-                                                    )
-                                                        .show()
+                                                    ).show()
                                                 }
                                                 .addOnFailureListener {
                                                     Toast.makeText(

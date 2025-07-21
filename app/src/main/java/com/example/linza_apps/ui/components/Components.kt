@@ -1,7 +1,9 @@
 package com.example.linza_apps.ui.components
 
+import android.app.AlertDialog
 import android.location.Address
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -60,6 +62,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.linza_apps.navigation.Screen
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.AutocompletePrediction
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken
@@ -70,6 +74,10 @@ import com.google.firebase.firestore.Query
 import com.google.firebase.firestore.firestore
 import com.google.firebase.firestore.toObject
 import com.google.firestore.v1.StructuredQuery.Order
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberMarkerState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -202,6 +210,7 @@ fun getTimeForOrder(): String {
 
 @Composable
 fun CustomerLookup(navController: NavController, flag: String, modifier: Modifier = Modifier) {
+    var showDialog by remember { mutableStateOf(false) }
     Box(
         modifier
             .fillMaxSize(),
@@ -209,19 +218,97 @@ fun CustomerLookup(navController: NavController, flag: String, modifier: Modifie
         CustomerSearchBar(navController = navController, flag = flag)
         ExtendedFloatingActionButton(
             onClick = {
-                navController.navigate(Screen.AddCustomers.route) {
-                    popUpTo(Screen.AddCustomers.route) {
-                        saveState = true
-                        inclusive = true
-                    }
-                    launchSingleTop = true
-                }
+                showDialog = true
+//                navController.navigate(Screen.AddCustomers.route) {
+//                    popUpTo(Screen.AddCustomers.route) {
+//                        saveState = true
+//                        inclusive = true
+//                    }
+//                    launchSingleTop = true
+//                }
             },
             icon = { Icon(Icons.Filled.Add, "Add") },
             text = { Text("Add New Customer") },
             modifier = Modifier
                 .padding(all = 15.dp)
                 .align(alignment = Alignment.BottomEnd)
+        )
+        AddCustomerDialog(
+            showDialog = showDialog,
+            onDismissRequest = {showDialog = false})
+    }
+}
+
+@Composable
+fun AddCustomerDialog(
+    modifier: Modifier = Modifier,
+    showDialog: Boolean,
+    onDismissRequest: () -> Unit,
+) {
+    var name by remember { mutableStateOf("") }
+    var phoneNumber by remember { mutableStateOf("") }
+    var address by remember { mutableStateOf("") }
+    val scope = rememberCoroutineScope()
+    val context = LocalContext.current
+
+    val db = FirebaseFirestore.getInstance()
+
+    if (showDialog) {
+        AlertDialog(
+            onDismissRequest = { onDismissRequest() },
+            title = { Text("Add a New Customer") },
+            text = {
+                Column {
+                    CustomTextField(name, "Name", { newText -> name = newText })
+                    CustomTextField(
+                        phoneNumber,
+                        "Phone Number",
+                        { newText -> phoneNumber = newText })
+                    LocationSearchField(
+                        address = address,
+                        onQueryChange = { address = it },
+                        onPlaceSelected = { selected -> address = selected }
+                    )
+                }
+            },
+            confirmButton = {
+                Button(onClick = {
+                    val customerRef = db.collection("Customers").document()
+
+                    val customer = hashMapOf(
+                        "id" to customerRef.id,
+                        "name" to name.trim().lowercase(),
+                        "phone" to phoneNumber,
+                        "address" to address
+                    )
+                    name = ""
+                    phoneNumber = ""
+                    address = ""
+
+                    customerRef.set(customer)
+                        .addOnSuccessListener {
+                            Log.d("Firestore", "Customer added w ID: ${customerRef.id}")
+                            onDismissRequest()
+                            Toast.makeText(
+                                context,
+                                "Customer Added Successfully",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                        .addOnFailureListener { e ->
+                            Log.w("Firestore", "Error adding customer", e)
+                            onDismissRequest()
+                            Toast.makeText(
+                                context,
+                                "Error Adding Customer",
+                                Toast.LENGTH_SHORT
+                            ).show()
+
+                        }
+
+                }) { Text("Add Customer") }
+            },
+            dismissButton = { TextButton(onClick = { onDismissRequest() }) { Text("Cancel") } }
         )
     }
 }
@@ -311,10 +398,12 @@ fun LocationSearchField(
             placesClient.findAutocompletePredictions(request)
                 .addOnSuccessListener { response ->
                     predictions = response.autocompletePredictions
+                    Log.e("Maps", "locations found\n${predictions}")
                     expanded = true
                 }
                 .addOnFailureListener { response ->
                     predictions = emptyList()
+                    Log.e("Maps", "locations not found?\n${predictions}", response)
                     expanded = false
                 }
         } else {
@@ -332,7 +421,7 @@ fun LocationSearchField(
                 singleLine = true,
                 modifier = Modifier
                     .zIndex(2f)
-                    .width(300.dp)
+                    .width(280.dp)
             )
             if (expanded) {
                 Popup(
@@ -356,7 +445,7 @@ fun LocationSearchField(
                             .zIndex(1f)
                             .padding(horizontal = 4.dp)
                             .animateContentSize()
-                            .width(295.dp)
+                            .width(275.dp)
                     ) {
                         items(predictions.take(3)) { prediction ->
 
@@ -378,6 +467,41 @@ fun LocationSearchField(
                 }
             }
         }
+    }
+}
+
+//*********************
+// OUT OF SCOPE FEATURE
+//*********************
+
+// Google Map Display and Location Picker Test Composable
+
+@Composable
+fun LocationPickerMap(
+    initialLatLng: LatLng = LatLng(6.9271, 79.8612), // Default Colombo
+    onLocationSelected: (LatLng) -> Unit
+) {
+    var markerPosition by remember { mutableStateOf(initialLatLng) }
+
+    GoogleMap(
+        modifier = Modifier.fillMaxSize(),
+        cameraPositionState = rememberCameraPositionState {
+            position = CameraPosition.fromLatLngZoom(initialLatLng, 15f)
+        },
+        onMapClick = { latLng ->
+            markerPosition = latLng
+            onLocationSelected(latLng)
+        }
+    ) {
+        Marker(
+            state = rememberMarkerState(position = markerPosition),
+            draggable = true,
+            onClick = { marker ->
+                markerPosition = marker.position
+                onLocationSelected(marker.position)
+                return@Marker false
+            },
+        )
     }
 }
 
