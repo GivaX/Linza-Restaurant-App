@@ -41,6 +41,7 @@ import com.example.linza_apps.ui.components.DateTimeDisplay
 import com.example.linza_apps.ui.components.LocationSearchField
 import com.example.linza_apps.ui.components.OrderItemsList
 import com.example.linza_apps.ui.components.Tabs
+import com.google.android.gms.maps.model.LatLng
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.firestore
 
@@ -100,10 +101,16 @@ fun ViewCustomerBox(customerId: String, modifier: Modifier = Modifier) {
     var updateName by remember { mutableStateOf(customer?.name ?: "") }
     var updateAddress by remember { mutableStateOf(customer?.address ?: "") }
     var updatePhone by remember { mutableStateOf(customer?.phone ?: "") }
+    var latLng by remember { mutableStateOf(LatLng(6.9691122,79.9206079)) }
 
     if (showDialog) {
         AlertDialog(
-            onDismissRequest = { showDialog = false },
+            onDismissRequest = {
+                showDialog = false
+                updateName = ""
+                updateAddress = ""
+                updatePhone = ""
+            },
             title = { Text("Edit Customer Details") },
             text = {
                 Column {
@@ -120,7 +127,11 @@ fun ViewCustomerBox(customerId: String, modifier: Modifier = Modifier) {
                     LocationSearchField(
                         address = updateAddress,
                         onQueryChange = { updateAddress = it },
-                        onPlaceSelected = { selected -> updateAddress = selected }
+                        onPlaceSelected = { selected ->
+                            if (selected != null) {
+                                latLng = selected
+                            }
+                        }
                     )
                 }
             },
@@ -134,7 +145,8 @@ fun ViewCustomerBox(customerId: String, modifier: Modifier = Modifier) {
                             mapOf(
                                 "name" to updateName.trim().lowercase(),
                                 "phone" to updatePhone,
-                                "address" to updateAddress
+                                "address" to updateAddress,
+                                "location" to latLng
                             )
                         )
                     }
@@ -154,24 +166,24 @@ fun ViewCustomerBox(customerId: String, modifier: Modifier = Modifier) {
                 .fillMaxSize()
         ) {
             //if (!showDialog) {
-                customer?.let {
-                    Column() {
-                        Text(
-                            color = Color.Black,
-                            text = "Customer: ${customer.name}\nPhone Number: ${customer.phone}\nAddress: ${customer.address}\n"
-                        )
-                        Button(onClick = {
-                            //Add customer details editing logic
-                            //Use something like alert dialog which has a form to edit customer details
-                            updateName = customer?.name ?: ""
-                            updateAddress = customer?.address ?: ""
-                            updatePhone = customer?.phone ?: ""
-                            showDialog = true
-                        }) {
-                            Text("Edit Customer Details")
-                        }
+            customer?.let {
+                Column() {
+                    Text(
+                        color = Color.Black,
+                        text = "Customer: ${customer.name}\nPhone Number: ${customer.phone}\nAddress: ${customer.address}\n"
+                    )
+                    Button(onClick = {
+                        //Add customer details editing logic
+                        //Use something like alert dialog which has a form to edit customer details
+                        updateName = customer?.name ?: ""
+                        updateAddress = customer?.address ?: ""
+                        updatePhone = customer?.phone ?: ""
+                        showDialog = true
+                    }) {
+                        Text("Edit Customer Details")
                     }
                 }
+            }
             //}
         }
         Box(

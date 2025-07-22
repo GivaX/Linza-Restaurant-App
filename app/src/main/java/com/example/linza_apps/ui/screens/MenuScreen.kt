@@ -301,13 +301,35 @@ fun Menu(modifier: Modifier = Modifier, viewModel: MenuViewModel, customer: Cust
                                                 val customerRef =
                                                     Firebase.firestore.collection("Customers")
                                                         .document(customer.id)
+                                                val deliveryRef =
+                                                    Firebase.firestore.collection("Deliveries")
+                                                        .document()
+
+                                                val orderRef =
+                                                    customerRef
+                                                        .collection("Orders")
+                                                        .document()
+
                                                 val orderData = hashMapOf(
+                                                    "orderId" to orderRef.id,
                                                     "items" to selectedItems,
                                                     "total" to totalPrice,
                                                     "date" to getTimeForOrder(),
-                                                    "delivery" to true // "delivery" to false
+                                                    "delivery" to true
                                                 )
-                                                customerRef.collection("Orders").add(orderData)
+                                                val deliveryData = hashMapOf(
+                                                    "deliveryId" to deliveryRef.id,
+                                                    "customerId" to customer.id,
+                                                    "orderId" to orderRef.id,
+                                                    "customerName" to customer.name,
+                                                    "address" to customer.address,
+                                                    "location" to customer.location,
+                                                    "items" to selectedItems,
+                                                    "total" to totalPrice,
+                                                    "date" to getTimeForOrder()
+                                                )
+
+                                                orderRef.set(orderData)
                                                     .addOnSuccessListener {
                                                         Toast.makeText(
                                                             context,
@@ -322,6 +344,7 @@ fun Menu(modifier: Modifier = Modifier, viewModel: MenuViewModel, customer: Cust
                                                             Toast.LENGTH_SHORT
                                                         ).show()
                                                     }
+                                                deliveryRef.set(deliveryData)
                                                 selectedItems.clear()
                                             }
                                             showDialog = false

@@ -100,6 +100,7 @@ fun Drivers(
     val db = Firebase.firestore
     val context = LocalContext.current
 
+    // Put into a Driver ViewModel in Components.kt
     if (showDialog) {
         AlertDialog(
             onDismissRequest = { showDialog = false },

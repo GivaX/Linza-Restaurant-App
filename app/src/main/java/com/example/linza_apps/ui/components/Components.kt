@@ -2,8 +2,10 @@ package com.example.linza_apps.ui.components
 
 import android.app.AlertDialog
 import android.location.Address
+import android.os.Build
 import android.util.Log
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -67,6 +69,8 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.android.libraries.places.api.Places
 import com.google.android.libraries.places.api.model.AutocompletePrediction
 import com.google.android.libraries.places.api.model.AutocompleteSessionToken
+import com.google.android.libraries.places.api.model.Place
+import com.google.android.libraries.places.api.net.FetchPlaceRequest
 import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRequest
 import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
@@ -235,7 +239,9 @@ fun CustomerLookup(navController: NavController, flag: String, modifier: Modifie
         )
         AddCustomerDialog(
             showDialog = showDialog,
-            onDismissRequest = {showDialog = false})
+            onDismissRequest = {
+                showDialog = false
+            })
     }
 }
 
@@ -248,13 +254,18 @@ fun AddCustomerDialog(
     var name by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
+    var latLng by remember { mutableStateOf(LatLng(0.0,0.0)) }
     val context = LocalContext.current
 
     val db = FirebaseFirestore.getInstance()
 
     if (showDialog) {
         AlertDialog(
-            onDismissRequest = { onDismissRequest() },
+            onDismissRequest = {
+                onDismissRequest()
+                name = ""
+                phoneNumber = ""
+                address = ""},
             title = { Text("Add a New Customer") },
             text = {
                 Column {
@@ -266,7 +277,11 @@ fun AddCustomerDialog(
                     LocationSearchField(
                         address = address,
                         onQueryChange = { address = it },
-                        onPlaceSelected = { selected -> address = selected }
+                        onPlaceSelected = { selected ->
+                            if (selected != null) {
+                                latLng = selected
+                            }
+                        }
                     )
                 }
             },
@@ -278,7 +293,8 @@ fun AddCustomerDialog(
                         "id" to customerRef.id,
                         "name" to name.trim().lowercase(),
                         "phone" to phoneNumber,
-                        "address" to address
+                        "address" to address,
+                        "location" to latLng
                     )
                     name = ""
                     phoneNumber = ""
@@ -307,7 +323,12 @@ fun AddCustomerDialog(
 
                 }) { Text("Add Customer") }
             },
-            dismissButton = { TextButton(onClick = { onDismissRequest() }) { Text("Cancel") } }
+            dismissButton = { TextButton(onClick = {
+                onDismissRequest()
+                name = ""
+                phoneNumber = ""
+                address = ""
+            }) { Text("Cancel") } }
         )
     }
 }
@@ -377,7 +398,7 @@ fun LocationSearchField(
     modifier: Modifier = Modifier,
     address: String,
     onQueryChange: (String) -> Unit,
-    onPlaceSelected: (String) -> Unit
+    onPlaceSelected: (LatLng?) -> Unit
 ) {
     val context = LocalContext.current
     val placesClient = remember { Places.createClient(context) }
@@ -424,7 +445,7 @@ fun LocationSearchField(
             )
             if (expanded) {
                 Popup(
-                    alignment = Alignment.TopEnd,
+                    alignment = Alignment.TopStart,
                     offset = IntOffset(0, 115),
                     onDismissRequest = {
                         expanded = false
@@ -453,12 +474,34 @@ fun LocationSearchField(
                                     .clickable {
                                         val selectedLoc = prediction.getFullText(null).toString()
                                         onQueryChange(selectedLoc)
-                                        onPlaceSelected(selectedLoc)
+
+                                        val placeId = prediction.placeId
+                                        val placeFields = listOf(
+                                            Place.Field.ID,
+                                            Place.Field.DISPLAY_NAME,
+                                            Place.Field.LOCATION,
+                                            Place.Field.FORMATTED_ADDRESS
+                                        )
+                                        val fetchPlaceRequest = FetchPlaceRequest.newInstance(placeId, placeFields)
+
+
+                                        placesClient.fetchPlace(fetchPlaceRequest)
+                                            .addOnSuccessListener { response ->
+                                                val place = response.place
+                                                Log.d("PlacesAPI", "Place details fetched: ${place.formattedAddress}, \nLatLng: ${place.location}, \nname: ${place.displayName}, \naddress:${selectedLoc}")
+                                                onPlaceSelected(place.location)
+                                            }
+                                            .addOnFailureListener { exception ->
+                                                Log.e("PlacesAPI", "Failed to fetch place details", exception)
+                                                onQueryChange("")
+                                            }
+
                                         expanded = false
                                         focusManager.clearFocus()
+                                        predictions = emptyList()
                                     }
                                     .padding(12.dp),
-                                text = prediction.getFullText(null).toString()
+                                text = prediction.getFullText(null).toString(),
                             )
                             HorizontalDivider(color = MaterialTheme.colorScheme.secondary)
                         }
@@ -510,6 +553,7 @@ fun EnterDetails() {
     var name by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
+    var latLng by remember { mutableStateOf<LatLng>(LatLng(6.9691122,79.9206079)) }
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
     val db = FirebaseFirestore.getInstance()
@@ -528,7 +572,11 @@ fun EnterDetails() {
             LocationSearchField(
                 address = address,
                 onQueryChange = { address = it },
-                onPlaceSelected = { selected -> address = selected }
+                onPlaceSelected = { selected ->
+                    if (selected != null) {
+                        latLng = selected
+                    }
+                }
             )
             Button(onClick = {
 
@@ -538,11 +586,13 @@ fun EnterDetails() {
                     "id" to customerRef.id,
                     "name" to name.trim().lowercase(),
                     "phone" to phoneNumber,
-                    "address" to address
+                    "address" to address,
+                    "location" to latLng
                 )
                 name = ""
                 phoneNumber = ""
                 address = ""
+                //latLng = ()
 
                 customerRef.set(customer)
                     .addOnSuccessListener {
@@ -598,7 +648,8 @@ data class Customer(
     val id: String = "",
     val name: String = "",
     val phone: String = "",
-    val address: String = ""
+    val address: String = "",
+    val location: LatLng = LatLng(0.0,0.0)
 )
 
 data class OrderItemsList(
