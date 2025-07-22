@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.Divider
@@ -26,6 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Tab
 import androidx.compose.material3.TabRow
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
@@ -133,6 +135,7 @@ fun Menu(modifier: Modifier = Modifier, viewModel: MenuViewModel, customer: Cust
     val menuItem by viewModel.menuItem.collectAsState()
     val context = LocalContext.current
     var menuFlag by remember { mutableStateOf(false) }
+    var showDialog by remember { mutableStateOf(false) }
 
     LaunchedEffect(lookupRequest) {
         lookupRequest?.let { request ->
@@ -284,19 +287,56 @@ fun Menu(modifier: Modifier = Modifier, viewModel: MenuViewModel, customer: Cust
                                     }
                                 }
                             }
-                            Column(modifier = Modifier.align(Alignment.CenterVertically)) {
-                                Button(
-                                    //modifier = Modifier.align(Alignment.CenterVertically),
-                                    onClick = {
-                                        //Logic for creating order for each customer
-                                        if (customer != null && totalPrice != 0) {
+                            if (showDialog){
+                                AlertDialog(
+                                    onDismissRequest = { showDialog = false },
+                                    title = { Text("What kind of Order") },
+                                    text = { Text(
+                                        "Is this a Delivery Order?",
+                                        //fontSize = 24.sp
+                                    ) },
+                                    confirmButton = {
+                                        Button(onClick = {
+                                            if (customer != null) {
+                                                val customerRef =
+                                                    Firebase.firestore.collection("Customers")
+                                                        .document(customer.id)
+                                                val orderData = hashMapOf(
+                                                    "items" to selectedItems,
+                                                    "total" to totalPrice,
+                                                    "date" to getTimeForOrder(),
+                                                    "delivery" to true // "delivery" to false
+                                                )
+                                                customerRef.collection("Orders").add(orderData)
+                                                    .addOnSuccessListener {
+                                                        Toast.makeText(
+                                                            context,
+                                                            "Order Sent",
+                                                            Toast.LENGTH_SHORT
+                                                        ).show()
+                                                    }
+                                                    .addOnFailureListener {
+                                                        Toast.makeText(
+                                                            context,
+                                                            "Order not sent",
+                                                            Toast.LENGTH_SHORT
+                                                        ).show()
+                                                    }
+                                                selectedItems.clear()
+                                            }
+                                            showDialog = false
+                                        }){ Text("Yes") }
+                                    },
+                                    dismissButton = { TextButton(onClick = {
+                                        if (customer != null) {
                                             val customerRef =
                                                 Firebase.firestore.collection("Customers")
                                                     .document(customer.id)
                                             val orderData = hashMapOf(
                                                 "items" to selectedItems,
                                                 "total" to totalPrice,
-                                                "date" to getTimeForOrder()
+                                                "date" to getTimeForOrder(),
+                                                "delivery" to false
                                             )
                                             customerRef.collection("Orders").add(orderData)
                                                 .addOnSuccessListener {
@@ -314,6 +354,20 @@ fun Menu(modifier: Modifier = Modifier, viewModel: MenuViewModel, customer: Cust
                                                     ).show()
                                                 }
                                             selectedItems.clear()
+                                        }
+                                        showDialog = false
+                                    }) { Text("No") } }
+                                )
+                            }
+
+                            Column(modifier = Modifier.align(Alignment.CenterVertically)) {
+                                Button(
+                                    //modifier = Modifier.align(Alignment.CenterVertically),
+                                    onClick = {
+                                        //Logic for creating order for each customer
+
+                                        if (customer != null && totalPrice != 0) {
+                                            showDialog = true
                                         } else if (customer == null) {
                                             Toast.makeText(
                                                 context,

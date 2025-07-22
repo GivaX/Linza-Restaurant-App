@@ -604,7 +604,8 @@ data class Customer(
 data class OrderItemsList(
     val date: String = "",
     val items: List<OrderItem> = emptyList(),
-    val total: Int = 0
+    val total: Int = 0,
+    val delivery: Boolean = false
 )
 
 class CustomerViewModel : ViewModel() {

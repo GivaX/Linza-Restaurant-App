@@ -254,7 +254,7 @@ fun ViewCustomerBox(customerId: String, modifier: Modifier = Modifier) {
                                         modifier = Modifier.clickable {
                                             selectedOrder = order
                                         },
-                                        text = "Order Date: ${order.date}",
+                                        text = "Order Date: ${order.date}  --  Delivery: ${order.delivery}",
                                         color = Color.Black
                                     )
                                 }
