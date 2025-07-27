@@ -727,6 +727,7 @@ class CustomerViewModel : ViewModel() {
 }
 
 data class Driver(
+    val id: String = "",
     val name: String = "",
     val phone: Long = 0,
     //val deliveries: List<DeliveryOrder> = emptyList(),
