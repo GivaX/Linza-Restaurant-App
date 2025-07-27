@@ -42,6 +42,7 @@ import androidx.compose.material3.TopAppBarDefaults.topAppBarColors
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableDoubleStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -254,7 +255,9 @@ fun AddCustomerDialog(
     var name by remember { mutableStateOf("") }
     var phoneNumber by remember { mutableStateOf("") }
     var address by remember { mutableStateOf("") }
-    var latLng by remember { mutableStateOf(LatLng(0.0,0.0)) }
+    var lat by remember { mutableDoubleStateOf(0.0) }
+    var long by remember { mutableDoubleStateOf(0.0) }
+    //var latLng by remember { mutableStateOf(LatLng(0.0,0.0)) }
     val context = LocalContext.current
 
     val db = FirebaseFirestore.getInstance()
@@ -279,7 +282,8 @@ fun AddCustomerDialog(
                         onQueryChange = { address = it },
                         onPlaceSelected = { selected ->
                             if (selected != null) {
-                                latLng = selected
+                                lat = selected.latitude
+                                long = selected.longitude
                             }
                         }
                     )
@@ -294,7 +298,8 @@ fun AddCustomerDialog(
                         "name" to name.trim().lowercase(),
                         "phone" to phoneNumber,
                         "address" to address,
-                        "location" to latLng
+                        "lat" to lat,
+                        "long" to long
                     )
                     name = ""
                     phoneNumber = ""
@@ -512,9 +517,9 @@ fun LocationSearchField(
     }
 }
 
-//*********************
+//vvvvvvvvvvvvvvvvvvvvv
 // OUT OF SCOPE FEATURE
-//*********************
+//vvvvvvvvvvvvvvvvvvvvv
 
 // Google Map Display and Location Picker Test Composable
 
@@ -546,6 +551,10 @@ fun LocationPickerMap(
         )
     }
 }
+
+//^^^^^^^^^^^^^^^^^^^^^
+// OUT OF SCOPE FEATURE
+//^^^^^^^^^^^^^^^^^^^^^
 
 @Preview
 @Composable
@@ -649,7 +658,8 @@ data class Customer(
     val name: String = "",
     val phone: String = "",
     val address: String = "",
-    val location: LatLng = LatLng(0.0,0.0)
+    val lat: Double = 0.0,
+    val long: Double = 0.0
 )
 
 data class OrderItemsList(
@@ -718,8 +728,47 @@ class CustomerViewModel : ViewModel() {
 
 data class Driver(
     val name: String = "",
-    val phone: Long = 0
+    val phone: Long = 0,
+    //val deliveries: List<DeliveryOrder> = emptyList(),
+    //val status: String = "" // String = "assigned", "unassigned"   OR   Boolean
 )
+
+data class DeliveryOrder(
+    val deliveryId: String = "",
+    val customerId: String = "", // Probably not needed
+    val orderId: String = "", // Probably not needed
+    val customerName: String = "",
+    val address: String = "",
+    val lat: Double = 0.0,
+    val long: Double = 0.0,
+    val items: List<OrderItem> = emptyList(),
+    val total: Int = 0,
+    val date: String = ""
+    //val status: String = "" // "assigned" "unassigned" "completed"
+)
+
+class DeliveryViewModel : ViewModel(){
+    private val db = Firebase.firestore
+
+    fun fetchDeliveries(): Flow<List<DeliveryOrder>> = flow {
+        val deliveryRef = db.collection("Deliveries")
+            .orderBy("date", Query.Direction.ASCENDING)
+            .get()
+            .await()
+
+        val items = deliveryRef.documents.mapNotNull { doc ->
+            Log.e("DelDri", "Delivery Reference, $doc")
+            try {
+                val item = doc.toObject(DeliveryOrder::class.java)
+                item
+            } catch (e: Exception) {
+                Log.e("DelDri", "Delivery Catch, $e")
+                null
+            }
+        }
+        emit(items)
+    }
+}
 
 class DriverViewModel : ViewModel() {
     private val db = Firebase.firestore

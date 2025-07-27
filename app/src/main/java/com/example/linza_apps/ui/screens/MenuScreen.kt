@@ -323,7 +323,8 @@ fun Menu(modifier: Modifier = Modifier, viewModel: MenuViewModel, customer: Cust
                                                     "orderId" to orderRef.id,
                                                     "customerName" to customer.name,
                                                     "address" to customer.address,
-                                                    "location" to customer.location,
+                                                    "lat" to customer.lat,
+                                                    "long" to customer.long,
                                                     "items" to selectedItems,
                                                     "total" to totalPrice,
                                                     "date" to getTimeForOrder()
