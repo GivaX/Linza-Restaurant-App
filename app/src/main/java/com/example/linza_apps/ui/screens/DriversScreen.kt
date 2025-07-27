@@ -17,6 +17,8 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -239,8 +241,11 @@ fun Drivers(
                             showPopup = true
                             editDialog = false
                         },
-                        modifier = Modifier.background(Color.Red)
-                    ) { Text("Delete", color = Color.White) }
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Red.copy(alpha = 0.4f),
+                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    ) { Text("Delete") }
                     TextButton(onClick = {
                         checkId = ""
                         updateName = ""
@@ -285,53 +290,6 @@ fun Drivers(
             },
             dismissButton = { TextButton(onClick = { showPopup = false }) { Text("No") } }
         )
-        /*Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(color = Color.Black.copy(alpha = 0.6f))
-                .clickable(
-                    onClick = { showPopup = false }
-                ),
-            contentAlignment = Alignment.Center
-        ) {
-            Popup(
-                alignment = Alignment.Center,
-                onDismissRequest = {
-                    checkId = ""
-                    updateName = ""
-                    updatePhone = ""
-                    showPopup = false
-                }
-            ) {
-                Box(Modifier.background(MaterialTheme.colorScheme.background)) {
-                    Column {
-                        Text("Do you want to Delete Driver: $updateName")
-                        Row {
-                            TextButton(onClick = { showPopup = false }) { Text("No") }
-                            Button(onClick = {
-                                val driverRef = db.collection("Drivers").document(checkId)
-
-                                driverRef.delete()
-                                    .addOnSuccessListener {
-                                        Toast.makeText(
-                                            context, "Driver Deleted", Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                    .addOnFailureListener {
-                                        Toast.makeText(
-                                            context, "Error Deleting Driver", Toast.LENGTH_SHORT
-                                        ).show()
-                                    }
-                                checkId = ""
-                                updateName = ""
-                                updatePhone = ""
-                                showPopup = false
-                            }) { Text("Yes") }
-                        }
-                    }
-                }
-            }
-        }*/
     }
 
     Box(
@@ -382,47 +340,3 @@ fun Drivers(
         }
     }
 }
-
-/*@Composable
-fun DriverEditDialog(
-    modifier: Modifier = Modifier,
-    onNameChange:(String)  -> Unit,
-    onPhoneChange:(String) -> Unit,
-    dialog: Boolean,
-    name: MutableState<String>,
-    phone: MutableState<String>
-) {
-    var showDialog = dialog
-
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            title = { Text("Edit Driver Details") },
-            text = {
-                Column() {
-                    OutlinedTextField(
-                        value = name,
-                        onValueChange = {onNameChange},
-                        label = { Text("Update Name") },
-                        singleLine = true
-                    )
-                    OutlinedTextField(
-                        value = updateName,
-                        onValueChange = { updateName = it },
-                        label = { Text("Name") },
-                        singleLine = true
-                    )
-                    OutlinedTextField(
-                        value = phoneNumber,
-                        onValueChange = { phoneNumber = it },
-                        label = { Text("Phone Number") },
-                        singleLine = true,
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Phone)
-                    )
-                }
-            },
-            confirmButton = {  },
-            dismissButton = {  }
-        )
-    }
-}*/
