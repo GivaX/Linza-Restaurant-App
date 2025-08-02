@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -19,6 +20,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -31,6 +35,15 @@ import com.example.linza_apps.R
 import com.example.linza_apps.ui.components.*
 import com.example.linza_apps.ui.theme.backgroundDark
 import com.example.linza_apps.ui.screens.NewOrderContent
+import com.google.android.gms.maps.model.BitmapDescriptor
+import com.google.android.gms.maps.model.BitmapDescriptorFactory
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.Marker
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.MarkerState
+import com.google.maps.android.compose.rememberCameraPositionState
 
 @Composable
 fun DeliveryScreen(navController: NavController, modifier: Modifier = Modifier) {
@@ -75,31 +88,41 @@ fun Deliveries() {
     val driverVm: DriverViewModel = viewModel()
     val deliveries by deliveryVm.fetchDeliveries().collectAsState(emptyList())
     val drivers by driverVm.fetchDrivers().collectAsState(emptyList())
+    val initialLatLng = LatLng(6.9690506, 79.9207371)
     Box(Modifier.fillMaxSize()) {
         Column() {
-            Row(Modifier
-                .fillMaxWidth()
-                .weight(6f)) {
+            Row(
+                Modifier
+                    .fillMaxWidth()
+                    .weight(6f)
+            ) {
                 //Order ID Column
-                Box(Modifier
-                    .background(Color.White)
-                    .fillMaxHeight()
-                    .weight(2f)) {
+                Box(
+                    Modifier
+                        .background(Color.White)
+                        .fillMaxHeight()
+                        .weight(2f)
+                ) {
                     Column {
-                        Box(Modifier
-                            .background(Color.Gray)
-                            .fillMaxWidth()) {
-                            Text("Order ID",
-                                modifier = Modifier.align(Alignment.Center), color = Color.Black)
+                        Box(
+                            Modifier
+                                .background(Color.Gray)
+                                .fillMaxWidth()
+                        ) {
+                            Text(
+                                "Order ID",
+                                modifier = Modifier.align(Alignment.Center), color = Color.Black
+                            )
                         }
                         Box() {
                             Column() { //Column for test text
-                            LazyColumn {
-                                items(deliveries) { delivery ->
-                                    Text(delivery.orderId, color = Color.Black)
+                                LazyColumn {
+                                    items(deliveries) { delivery ->
+                                        Text(delivery.orderId, color = Color.Black)
+                                        HorizontalDivider()
+                                    }
                                 }
-                            }
-                            HorizontalDivider()
+                                HorizontalDivider()
 
                                 Text("Test Filler Text", color = Color.Black)
                                 Text("1.", color = Color.Black)
@@ -111,48 +134,55 @@ fun Deliveries() {
                 }
 
                 //Address Column
-                Box(Modifier
-                    .background(Color.Gray)
-                    .fillMaxHeight()
-                    .weight(8f)) {
+                Box(
+                    Modifier
+                        .background(Color.Gray)
+                        .fillMaxHeight()
+                        .weight(8f)
+                ) {
                     Column {
-                        Box(Modifier
-                            .background(Color.White)
-                            .fillMaxWidth()) {
-                            Text("Address",
-                                modifier = Modifier.align(Alignment.Center), color = Color.Black)
+                        Box(
+                            Modifier
+                                .background(Color.White)
+                                .fillMaxWidth()
+                        ) {
+                            Text(
+                                "Address",
+                                modifier = Modifier.align(Alignment.Center), color = Color.Black
+                            )
                         }
                         Box() {
                             Column() { //Column for test text
                                 LazyColumn {
-                                    Log.e("DelDri", "Deliveries: ${deliveries.toString()}" )
+                                    Log.e("DelDri", "Deliveries: ${deliveries.toString()}")
                                     Log.e("DelDri", "Drivers: ${drivers.toString()}")
                                     items(deliveries) { delivery ->
                                         Text(delivery.address, color = Color.Black)
+                                        HorizontalDivider()
                                     }
                                 }
-                                HorizontalDivider()
-
-                                Text("Test Filler Text", color = Color.Black)
-                                Text("144/4 Wewalduwa Rd, Kelaniya", color = Color.Black)
-                                Text("Wattala", color = Color.Black)
-                                Text("Dalugama", color = Color.Black)
                             }
                         }
                     }
                 }
 
                 //Out for Delivery Column
-                Box(Modifier
-                    .background(Color.White)
-                    .fillMaxHeight()
-                    .weight(3f)) {
+                Box(
+                    Modifier
+                        .background(Color.White)
+                        .fillMaxHeight()
+                        .weight(3f)
+                ) {
                     Column {
-                        Box(Modifier
-                            .background(Color.Gray)
-                            .fillMaxWidth()) {
-                            Text(text = "Out for Delivery",
-                                modifier = Modifier.align(Alignment.Center), color = Color.Black)
+                        Box(
+                            Modifier
+                                .background(Color.Gray)
+                                .fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "Out for Delivery",
+                                modifier = Modifier.align(Alignment.Center), color = Color.Black
+                            )
                         }
                         Box() {
                             LazyColumn {
@@ -173,33 +203,81 @@ fun Deliveries() {
                 }
 
                 //Available Drivers Column
-                Box(Modifier
-                    .background(Color.Gray)
-                    .fillMaxHeight()
-                    .weight(3f)) {
+                Box(
+                    Modifier
+                        .background(Color.Gray)
+                        .fillMaxHeight()
+                        .weight(3f)
+                ) {
                     Column {
-                        Box(Modifier
-                            .background(Color.White)
-                            .fillMaxWidth()) {
-                            Text("Available Drivers",
-                                modifier = Modifier.align(Alignment.Center), color = Color.Black)
+                        Box(
+                            Modifier
+                                .background(Color.White)
+                                .fillMaxWidth()
+                        ) {
+                            Text(
+                                "Available Drivers",
+                                modifier = Modifier.align(Alignment.Center), color = Color.Black
+                            )
                         }
                         Box() {
                             LazyColumn {
                                 items(drivers) { driver ->
                                     Text(driver.name, color = Color.Black)
+                                    HorizontalDivider()
                                 }
                             }
                         }
                     }
                 }
             }
-            Box(Modifier
-                .fillMaxWidth()
-                .background(Color.DarkGray)
-                .weight(1f)) {
-                Text("Map buttons etc",
-                    modifier = Modifier.align(Alignment.Center))
+
+            var showMap by remember { mutableStateOf(false) }
+
+            if (showMap) {
+                Column {
+                    GoogleMap(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .weight(9f),
+                        cameraPositionState = rememberCameraPositionState {
+                            position = CameraPosition.fromLatLngZoom(initialLatLng, 15f)
+                        }
+                    ) {
+                        Marker(
+                            state = MarkerState(initialLatLng),
+                            title = "Linza",
+                            icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
+
+                        )
+                        deliveries.forEach { del ->
+                            Marker(
+                                state = MarkerState(LatLng(del.lat, del.long)),
+                                title = del.customerName,
+                            )
+                        }
+                    }
+                    Button(
+                        onClick = { showMap = false },
+                        modifier = Modifier
+                            .weight(1f)
+                            .align(Alignment.CenterHorizontally)
+                    ) { Text("Back") }
+                }
+            }
+            Box(
+                Modifier
+                    .fillMaxWidth()
+                    .background(Color.DarkGray)
+                    .weight(1f)
+            ) {
+                Button(
+                    onClick = {
+                        showMap = true
+                    },
+                    modifier = Modifier.align(Alignment.Center)
+                ) { Text("Map") }
+
             }
         }
     }

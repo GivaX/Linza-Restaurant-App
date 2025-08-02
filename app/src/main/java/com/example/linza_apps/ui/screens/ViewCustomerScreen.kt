@@ -146,7 +146,8 @@ fun ViewCustomerBox(customerId: String, modifier: Modifier = Modifier) {
                                 "name" to updateName.trim().lowercase(),
                                 "phone" to updatePhone,
                                 "address" to updateAddress,
-                                "location" to latLng
+                                "lat" to latLng.latitude,
+                                "long" to latLng.longitude
                             )
                         )
                     }
