@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
@@ -117,17 +118,11 @@ fun Deliveries() {
                         Box() {
                             Column() { //Column for test text
                                 LazyColumn {
-                                    items(deliveries) { delivery ->
-                                        Text(delivery.orderId, color = Color.Black)
+                                    itemsIndexed(deliveries) { index, delivery ->
+                                        Text((index+1).toString(), color = Color.Black)
                                         HorizontalDivider()
                                     }
                                 }
-                                HorizontalDivider()
-
-                                Text("Test Filler Text", color = Color.Black)
-                                Text("1.", color = Color.Black)
-                                Text("2.", color = Color.Black)
-                                Text("3.", color = Color.Black)
                             }
                         }
                     }
@@ -158,6 +153,12 @@ fun Deliveries() {
                                     Log.e("DelDri", "Drivers: ${drivers.toString()}")
                                     items(deliveries) { delivery ->
                                         Text(delivery.address, color = Color.Black)
+                                        /*
+                                        make it clickable
+                                        when clicked, add delivery order to driver - assign order to temp delivery order item
+                                        and delete order from deliveries collection.
+                                        have some kinda flag to know a delivery was clicked
+                                        */
                                         HorizontalDivider()
                                     }
                                 }
@@ -224,6 +225,10 @@ fun Deliveries() {
                             LazyColumn {
                                 items(drivers) { driver ->
                                     Text(driver.name, color = Color.Black)
+                                    /*
+                                    make clickable and using flag for delivery click
+                                    assign temp order to driver list of delivery orders
+                                     */
                                     HorizontalDivider()
                                 }
                             }
@@ -250,10 +255,10 @@ fun Deliveries() {
                             icon = BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_BLUE)
 
                         )
-                        deliveries.forEach { del ->
+                        deliveries.forEachIndexed { i, del ->
                             Marker(
                                 state = MarkerState(LatLng(del.lat, del.long)),
-                                title = del.customerName,
+                                title = (i+1).toString(),
                             )
                         }
                     }
