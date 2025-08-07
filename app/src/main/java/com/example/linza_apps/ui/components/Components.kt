@@ -83,10 +83,12 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.rememberCameraPositionState
 import com.google.maps.android.compose.rememberMarkerState
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.callbackFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
@@ -730,8 +732,9 @@ data class Driver(
     val id: String = "",
     val name: String = "",
     val phone: Long = 0,
-    //val deliveries: List<DeliveryOrder> = emptyList(),
-    //val status: String = "" // String = "assigned", "unassigned"   OR   Boolean
+    val deliveries: List<DeliveryOrder> = emptyList(),
+    val status: Boolean = false
+    //val status: String = "unassigned" // String = "assigned", "unassigned"   OR   Boolean
 )
 
 data class DeliveryOrder(
@@ -744,30 +747,35 @@ data class DeliveryOrder(
     val long: Double = 0.0,
     val items: List<OrderItem> = emptyList(),
     val total: Int = 0,
-    val date: String = ""
-    //val status: String = "" // "assigned" "unassigned" "completed"
+    val date: String = "",
+    val status: Boolean = false,
+    //val status: String = "unassigned" // "assigned" "unassigned" "completed"
 )
 
 class DeliveryViewModel : ViewModel(){
     private val db = Firebase.firestore
 
-    fun fetchDeliveries(): Flow<List<DeliveryOrder>> = flow {
-        val deliveryRef = db.collection("Deliveries")
+    fun fetchDeliveries(): Flow<List<DeliveryOrder>> = callbackFlow {
+        val listener = db.collection("Deliveries")
             .orderBy("date", Query.Direction.ASCENDING)
-            .get()
-            .await()
+            .addSnapshotListener{ snapshot, error ->
+                if (error != null) {
+                    Log.e("DelDri", "Listen failed", error)
+                }
 
-        val items = deliveryRef.documents.mapNotNull { doc ->
-            Log.e("DelDri", "Delivery Reference, $doc")
-            try {
-                val item = doc.toObject(DeliveryOrder::class.java)
-                item
-            } catch (e: Exception) {
-                Log.e("DelDri", "Delivery Catch, $e")
-                null
+                val items = snapshot?.documents?.mapNotNull { doc ->
+                    Log.e("DelDri", "Delivery Reference, $doc")
+                    try {
+                        doc.toObject(DeliveryOrder::class.java)
+                    } catch (e: Exception) {
+                        Log.e("DelDri", "Delivery Catch, $e")
+                        null
+                    }
+                } ?: emptyList()
+
+                trySend(items).isSuccess
             }
-        }
-        emit(items)
+        awaitClose { listener.remove() }
     }
 }
 
@@ -777,21 +785,27 @@ class DriverViewModel : ViewModel() {
     //val _drivers = MutableStateFlow<Driver?>(null)
     //val drivers: StateFlow<Driver?> = _drivers
 
-    fun fetchDrivers(): Flow<List<Driver>> = flow {
-        val driverRef = db.collection("Drivers")
+    fun fetchDrivers(): Flow<List<Driver>> = callbackFlow {
+        val listener = db.collection("Drivers")
             .orderBy("name", Query.Direction.ASCENDING)
-            .get()
-            .await()
+            .addSnapshotListener{ snapshot, error ->
+                if (error != null) {
+                    Log.e("Drivers", "Listen failed", error)
+                }
 
-        val items = driverRef.documents.mapNotNull { doc ->
-            try {
-                val item = doc.toObject(Driver::class.java)
-                item
-            } catch (e: Exception) {
-                null
+                val items = snapshot?.documents?.mapNotNull { doc ->
+                    Log.e("Drivers", "Driver Reference, $doc")
+                    try {
+                        doc.toObject(Driver::class.java)
+                    } catch (e: Exception) {
+                        Log.e("Drivers", "Driver Catch, $e")
+                        null
+                    }
+                } ?: emptyList()
+
+                trySend(items).isSuccess
             }
-        }
-        emit(items)
+        awaitClose { listener.remove() }
     }
 }
 

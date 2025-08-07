@@ -3,6 +3,7 @@ package com.example.linza_apps.ui.screens
 import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -21,15 +22,18 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshots.SnapshotStateList
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.linza_apps.R
@@ -41,6 +45,8 @@ import com.google.android.gms.maps.model.BitmapDescriptorFactory
 import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Marker
+import com.google.firebase.Firebase
+import com.google.firebase.firestore.firestore
 import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
@@ -90,6 +96,11 @@ fun Deliveries() {
     val deliveries by deliveryVm.fetchDeliveries().collectAsState(emptyList())
     val drivers by driverVm.fetchDrivers().collectAsState(emptyList())
     val initialLatLng = LatLng(6.9690506, 79.9207371)
+
+    val deliveryRef = Firebase.firestore.collection("Deliveries")
+    val driverRef = Firebase.firestore.collection("Drivers")
+    var selectedDeliveries = remember { mutableStateListOf<DeliveryOrder>() }
+
     Box(Modifier.fillMaxSize()) {
         Column() {
             Row(
@@ -119,7 +130,7 @@ fun Deliveries() {
                             Column() { //Column for test text
                                 LazyColumn {
                                     itemsIndexed(deliveries) { index, delivery ->
-                                        Text((index+1).toString(), color = Color.Black)
+                                        Text("${(index + 1)} - ${delivery.orderId}", color = Color.Black)
                                         HorizontalDivider()
                                     }
                                 }
@@ -147,19 +158,36 @@ fun Deliveries() {
                             )
                         }
                         Box() {
+
                             Column() { //Column for test text
                                 LazyColumn {
                                     Log.e("DelDri", "Deliveries: ${deliveries.toString()}")
                                     Log.e("DelDri", "Drivers: ${drivers.toString()}")
                                     items(deliveries) { delivery ->
-                                        Text(delivery.address, color = Color.Black)
+                                        if (!delivery.status) {
+                                            val isSelected = selectedDeliveries.contains(delivery)
+                                            Text(
+                                                text = delivery.address,
+                                                color = Color.Black,
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .background(if (isSelected) Color(0xFFD0F0C0) else Color.Transparent)
+                                                    .clickable {
+                                                        if (isSelected) {
+                                                            selectedDeliveries.remove(delivery)
+                                                        } else {
+                                                            selectedDeliveries.add(delivery)
+                                                        }
+                                                    })
+                                            HorizontalDivider()
+                                        }
                                         /*
                                         make it clickable
                                         when clicked, add delivery order to driver - assign order to temp delivery order item
                                         and delete order from deliveries collection.
                                         have some kinda flag to know a delivery was clicked
                                         */
-                                        HorizontalDivider()
+
                                     }
                                 }
                             }
@@ -182,22 +210,24 @@ fun Deliveries() {
                         ) {
                             Text(
                                 text = "Out for Delivery",
+                                //fontSize = 30.sp,
                                 modifier = Modifier.align(Alignment.Center), color = Color.Black
                             )
                         }
                         Box() {
                             LazyColumn {
                                 items(drivers) { driver ->
-                                    /*  An if statement to display assigned and unassigned (status)
-                                    if (driver.status == "assigned") {
-                                        Text(driver.name, color = Color.Black) //Make it clickable and assigned deliveries inside it
-                                    }*/
+                                    //  An if statement to display assigned and unassigned (status)
+                                    if (driver.status) {
+                                        Text(
+                                            text = driver.name,
+                                            color = Color.Black,
+                                            //fontSize = 20.sp
+
+                                        ) //Make it clickable and assigned deliveries inside it
+                                        HorizontalDivider()
+                                    }
                                 }
-                            }
-                            Column() { //Column for test text
-                                Text("Test Filler Text", color = Color.Black)
-                                Text("Driver 1", color = Color.Black)
-                                Text("Driver 4", color = Color.Black)
                             }
                         }
                     }
@@ -224,12 +254,21 @@ fun Deliveries() {
                         Box() {
                             LazyColumn {
                                 items(drivers) { driver ->
-                                    Text(driver.name, color = Color.Black)
-                                    /*
-                                    make clickable and using flag for delivery click
-                                    assign temp order to driver list of delivery orders
-                                     */
-                                    HorizontalDivider()
+
+                                    if (!driver.status) {
+                                        Text(
+                                            text = driver.name,
+                                            color = Color.Black,
+                                            modifier = Modifier.clickable {
+                                                assignDeliveries(selectedDeliveries, driver)
+                                                selectedDeliveries.clear()
+                                            })
+                                        /*
+                                            make clickable and using flag for delivery click
+                                            assign temp order to driver list of delivery orders
+                                             */
+                                        HorizontalDivider()
+                                    }
                                 }
                             }
                         }
@@ -258,7 +297,7 @@ fun Deliveries() {
                         deliveries.forEachIndexed { i, del ->
                             Marker(
                                 state = MarkerState(LatLng(del.lat, del.long)),
-                                title = (i+1).toString(),
+                                title = (i + 1).toString(),
                             )
                         }
                     }
@@ -288,3 +327,38 @@ fun Deliveries() {
     }
 }
 
+fun assignDeliveries(selectedDeliveries : SnapshotStateList<DeliveryOrder>, driver: Driver){
+    val deliveryRef = Firebase.firestore.collection("Deliveries")
+    val driverRef = Firebase.firestore.collection("Drivers")
+    if (selectedDeliveries.isNotEmpty()) {
+        driverRef.document(driver.id)
+            .update(
+                mapOf(
+                    "deliveries" to selectedDeliveries,
+                    "status" to true
+                )
+            )
+            .addOnSuccessListener {
+                Log.d("FireStore", "Driver updated")
+            }
+            .addOnFailureListener {
+                Log.e("FireStore", "Error updating Driver")
+            }
+        selectedDeliveries.forEach { del ->
+            deliveryRef.document(del.deliveryId)
+                .update("status", true)
+                .addOnSuccessListener {
+                    Log.d(
+                        "FireStore",
+                        "Delivery Status True"
+                    )
+                }
+                .addOnFailureListener {
+                    Log.e(
+                        "FireStore",
+                        "Error updating delivery"
+                    )
+                }
+        }
+    }
+}

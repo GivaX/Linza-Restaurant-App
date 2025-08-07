@@ -147,7 +147,8 @@ fun Drivers(
                     val driver = hashMapOf(
                         "id" to driverRef.id,
                         "name" to name.first().uppercaseChar() + name.substring(1).lowercase(),
-                        "phone" to phoneNumber.toLong()
+                        "phone" to phoneNumber.toLong(),
+                        //"deliveries" to emptyList()
                     )
                     id = ""
                     name = ""

@@ -327,7 +327,8 @@ fun Menu(modifier: Modifier = Modifier, viewModel: MenuViewModel, customer: Cust
                                                     "long" to customer.long,
                                                     "items" to selectedItems,
                                                     "total" to totalPrice,
-                                                    "date" to getTimeForOrder()
+                                                    "date" to getTimeForOrder(),
+                                                   // "status" to false
                                                 )
 
                                                 orderRef.set(orderData)
