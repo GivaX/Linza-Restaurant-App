@@ -785,6 +785,14 @@ class DriverViewModel : ViewModel() {
     //val _drivers = MutableStateFlow<Driver?>(null)
     //val drivers: StateFlow<Driver?> = _drivers
 
+    fun getDriverDeliveries(driverId: String): Flow<List<DeliveryOrder>> = flow {
+        val snapshot = db.collection("Drivers")
+            .document(driverId)
+            .get()
+            .await()
+        snapshot.toObject(Driver::class.java)?.let { emit(it.deliveries) }
+    }
+
     fun fetchDrivers(): Flow<List<Driver>> = callbackFlow {
         val listener = db.collection("Drivers")
             .orderBy("name", Query.Direction.ASCENDING)

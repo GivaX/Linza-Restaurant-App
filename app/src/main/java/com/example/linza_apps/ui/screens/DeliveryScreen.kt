@@ -14,11 +14,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -51,6 +53,7 @@ import com.google.maps.android.compose.GoogleMap
 import com.google.maps.android.compose.Marker
 import com.google.maps.android.compose.MarkerState
 import com.google.maps.android.compose.rememberCameraPositionState
+import kotlinx.coroutines.flow.forEach
 
 @Composable
 fun DeliveryScreen(navController: NavController, modifier: Modifier = Modifier) {
@@ -96,10 +99,7 @@ fun Deliveries() {
     val deliveries by deliveryVm.fetchDeliveries().collectAsState(emptyList())
     val drivers by driverVm.fetchDrivers().collectAsState(emptyList())
     val initialLatLng = LatLng(6.9690506, 79.9207371)
-
-    val deliveryRef = Firebase.firestore.collection("Deliveries")
-    val driverRef = Firebase.firestore.collection("Drivers")
-    var selectedDeliveries = remember { mutableStateListOf<DeliveryOrder>() }
+    val selectedDeliveries = remember { mutableStateListOf<DeliveryOrder>() }
 
     Box(Modifier.fillMaxSize()) {
         Column() {
@@ -130,8 +130,13 @@ fun Deliveries() {
                             Column() { //Column for test text
                                 LazyColumn {
                                     itemsIndexed(deliveries) { index, delivery ->
-                                        Text("${(index + 1)} - ${delivery.orderId}", color = Color.Black)
-                                        HorizontalDivider()
+                                        if (!delivery.status) {
+                                            Text(
+                                                "${(index + 1)} - ${delivery.orderId}",
+                                                color = Color.Black
+                                            )
+                                            HorizontalDivider()
+                                        }
                                     }
                                 }
                             }
@@ -194,6 +199,80 @@ fun Deliveries() {
                         }
                     }
                 }
+                var driverDetails by remember { mutableStateOf(false) }
+                var selectedDriver by remember { mutableStateOf<Driver?>(null) }
+
+                if (driverDetails) {
+                    val deliveryRef = Firebase.firestore.collection("Deliveries")
+                    val driverRef = Firebase.firestore.collection("Drivers")
+                    AlertDialog(
+                        onDismissRequest = { driverDetails = false },
+                        title = {
+                            if (selectedDriver != null) {
+                                Text(selectedDriver!!.name)
+                            }
+                        },
+                        text = {
+                            Column {
+                                val driverDeliveries =
+                                    driverVm.getDriverDeliveries(selectedDriver!!.id)
+                                        .collectAsState(emptyList()).value
+                                Text("Return from Delivery?")
+                                LazyColumn {
+                                    items(driverDeliveries) { delivery ->
+                                        Text(delivery.address)
+                                    }
+                                }
+                            }
+                        },
+                        confirmButton = {
+                            selectedDriver?.let {
+                                val driverDeliveries =
+                                    driverVm.getDriverDeliveries(selectedDriver!!.id)
+                                        .collectAsState(emptyList()).value
+                                Row {
+                                    Button(onClick = {
+                                        driverDeliveries.forEach { delivery ->
+                                            deliveryRef.document(delivery.deliveryId).delete()
+                                        }
+                                        driverRef.document(selectedDriver!!.id)
+                                            .update(
+                                                mapOf(
+                                                    "deliveries" to null,
+                                                    "status" to false
+                                                )
+                                            )
+                                        driverDetails = false
+                                    }) { Text("Return") }
+                                    TextButton(onClick = {
+                                        driverDetails = false
+                                    }) { Text("Cancel") }
+                                }
+                            }
+                        },
+                        dismissButton = {
+                            selectedDriver?.let {
+                                val driverDeliveries =
+                                    driverVm.getDriverDeliveries(selectedDriver!!.id)
+                                        .collectAsState(emptyList()).value
+                                Button(onClick = {
+                                    driverDeliveries.forEach { delivery ->
+                                        deliveryRef.document(delivery.deliveryId)
+                                            .update("status", false)
+                                    }
+                                    driverRef.document(selectedDriver!!.id)
+                                        .update(
+                                            mapOf(
+                                                "deliveries" to null,
+                                                "status" to false
+                                            )
+                                        )
+                                    driverDetails = false
+                                }) { Text("Unassign Deliveries") }
+                            }
+                        }
+                    )
+                }
 
                 //Out for Delivery Column
                 Box(
@@ -223,7 +302,12 @@ fun Deliveries() {
                                             text = driver.name,
                                             color = Color.Black,
                                             //fontSize = 20.sp
-
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .clickable {
+                                                    selectedDriver = driver
+                                                    driverDetails = true
+                                                }
                                         ) //Make it clickable and assigned deliveries inside it
                                         HorizontalDivider()
                                     }
@@ -259,10 +343,12 @@ fun Deliveries() {
                                         Text(
                                             text = driver.name,
                                             color = Color.Black,
-                                            modifier = Modifier.clickable {
-                                                assignDeliveries(selectedDeliveries, driver)
-                                                selectedDeliveries.clear()
-                                            })
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .clickable {
+                                                    assignDeliveries(selectedDeliveries, driver)
+                                                    selectedDeliveries.clear()
+                                                })
                                         /*
                                             make clickable and using flag for delivery click
                                             assign temp order to driver list of delivery orders
@@ -327,7 +413,7 @@ fun Deliveries() {
     }
 }
 
-fun assignDeliveries(selectedDeliveries : SnapshotStateList<DeliveryOrder>, driver: Driver){
+fun assignDeliveries(selectedDeliveries: SnapshotStateList<DeliveryOrder>, driver: Driver) {
     val deliveryRef = Firebase.firestore.collection("Deliveries")
     val driverRef = Firebase.firestore.collection("Drivers")
     if (selectedDeliveries.isNotEmpty()) {
