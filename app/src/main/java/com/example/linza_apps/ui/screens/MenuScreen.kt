@@ -1,6 +1,9 @@
 package com.example.linza_apps.ui.screens
 
+import android.content.Context
+import android.content.Intent
 import android.graphics.Paint.Align
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -62,6 +65,7 @@ import com.google.firebase.Firebase
 import com.google.firebase.firestore.FirebaseFirestore
 import com.google.firebase.firestore.firestore
 import kotlinx.coroutines.tasks.await
+import java.io.ByteArrayOutputStream
 import java.time.LocalDateTime
 
 
@@ -121,6 +125,31 @@ data class LookupRequest(
     val menuNumber: Int,
     val size: String
 )
+
+
+fun OrderReceipt(items: List<OrderItem>): ByteArray{
+    val output = ByteArrayOutputStream()
+
+    //Initialize
+    output.write(byteArrayOf(0x1B, 0x40))
+    Log.e("reciept","${items}" )
+
+    //Items
+    for (item in items) {
+        val menu = item.menuNumber ?: "N/A"
+        val size = item.size ?: "N/A"
+        val qty = item.quantity
+
+        output.write("${qty} X ${menu}. ${size}\n".toByteArray(Charsets.US_ASCII))
+        Log.e("reciept","${item.menuNumber}" )
+    }
+
+    // Feed & cut
+    output.write(byteArrayOf(0x0A, 0x0A, 0x0A)) // Line feeds
+    output.write(byteArrayOf(0x1D, 0x56, 0x00)) // Full cut
+
+    return output.toByteArray()
+}
 
 @Composable
 fun Menu(modifier: Modifier = Modifier, viewModel: MenuViewModel, customer: Customer?) {

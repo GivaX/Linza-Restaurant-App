@@ -28,11 +28,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
+import com.example.linza_apps.MyApp
 import com.example.linza_apps.R
 import com.example.linza_apps.ui.components.*
 import kotlinx.coroutines.delay
@@ -72,10 +74,34 @@ fun DashboardContent(navController: NavController, modifier: Modifier = Modifier
         )
         Column {
             DateTimeDisplay()
+            TestButton()
             ManageDriversButton(navController)
+
         }
     }
 
+}
+
+@Composable
+fun TestButton(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+    val usbHelper = (context.applicationContext as MyApp).usbHelper
+    Box(
+        modifier = Modifier
+            .padding(16.dp),
+        contentAlignment = Alignment.BottomEnd
+    ) {
+        Button(
+            onClick = {
+                val escData = byteArrayOf(
+                    0x1B, 0x40, // Initialize
+                    *"Hello SNBC Printer!\n".toByteArray(),
+                    0x1D, 0x56, 0x00 // Cut paper
+                )
+                usbHelper.print(escData)
+            }
+        ) { Text("Test Button") }
+    }
 }
 
 @Composable
