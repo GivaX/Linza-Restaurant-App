@@ -54,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
+import com.example.linza_apps.MyApp
 import kotlinx.coroutines.delay
 import java.text.SimpleDateFormat
 import java.util.Date
@@ -127,26 +128,45 @@ data class LookupRequest(
 )
 
 
-fun OrderReceipt(items: List<OrderItem>): ByteArray{
+fun OrderReceipt(items: List<OrderItem>, delivery: Boolean, cusName: String = ""): ByteArray{
     val output = ByteArrayOutputStream()
 
     //Initialize
     output.write(byteArrayOf(0x1B, 0x40))
-    Log.e("reciept","${items}" )
+    Log.e("Printer","${items}" )
+
+    if (delivery) {
+        output.write(byteArrayOf(0x1B, 0x61, 0x01)) // Center align
+        output.write(byteArrayOf(0x1B, 0x45, 0x01)) // Bold ON
+        output.write("*** DELIVERY ORDER ***\n".toByteArray())
+        output.write(byteArrayOf(0x1B, 0x45, 0x00)) // Bold OFF
+    } else {
+        output.write(byteArrayOf(0x1B, 0x61, 0x01)) // Center align
+        output.write(byteArrayOf(0x1B, 0x45, 0x01)) // Bold ON
+        output.write("*** TAKEAWAY ***\n".toByteArray())
+        output.write(byteArrayOf(0x1B, 0x45, 0x00)) // Bold OFF
+    }
+
+    output.write(byteArrayOf(0x1D, 0x21, 0x00)) // Normal size
+    output.write(byteArrayOf(0x1B, 0x61, 0x00)) // Left align
+    output.write("\n".toByteArray())
+
+    output.write("$cusName\n".toByteArray())
+    output.write("--------------\n".toByteArray())
 
     //Items
     for (item in items) {
-        val menu = item.menuNumber ?: "N/A"
-        val size = item.size ?: "N/A"
-        val qty = item.quantity
-
-        output.write("${qty} X ${menu}. ${size}\n".toByteArray(Charsets.US_ASCII))
-        Log.e("reciept","${item.menuNumber}" )
+        //Format: 2 X Chicken Kottu (M)
+        output.write("${item.quantity} X ${item.name} (${item.size})\n".toByteArray(Charsets.US_ASCII))
     }
 
     // Feed & cut
     output.write(byteArrayOf(0x0A, 0x0A, 0x0A)) // Line feeds
     output.write(byteArrayOf(0x1D, 0x56, 0x00)) // Full cut
+
+    // Footer - Feed & cut
+    output.write(byteArrayOf(0x0A, 0x0A, 0x0A)) // 3 line feeds
+    output.write(byteArrayOf(0x1D, 0x56, 0x01)) // Partial cut (changed from 0x00)
 
     return output.toByteArray()
 }
@@ -163,6 +183,7 @@ fun Menu(modifier: Modifier = Modifier, viewModel: MenuViewModel, customer: Cust
     val selectedItems = remember { mutableStateListOf<OrderItem>() }
     val menuItem by viewModel.menuItem.collectAsState()
     val context = LocalContext.current
+    val usbHelper = (context.applicationContext as MyApp).usbHelper
     var menuFlag by remember { mutableStateOf(false) }
     var showDialog by remember { mutableStateOf(false) }
 
@@ -376,6 +397,10 @@ fun Menu(modifier: Modifier = Modifier, viewModel: MenuViewModel, customer: Cust
                                                         ).show()
                                                     }
                                                 deliveryRef.set(deliveryData)
+
+                                                val receiptData = OrderReceipt(selectedItems, true, customer.name)
+                                                usbHelper.print(receiptData)
+
                                                 selectedItems.clear()
                                             }
                                             showDialog = false
@@ -407,6 +432,9 @@ fun Menu(modifier: Modifier = Modifier, viewModel: MenuViewModel, customer: Cust
                                                         Toast.LENGTH_SHORT
                                                     ).show()
                                                 }
+                                            val receiptData = OrderReceipt(selectedItems, false, customer.name)
+                                            usbHelper.print(receiptData)
+
                                             selectedItems.clear()
                                         }
                                         showDialog = false
