@@ -250,6 +250,7 @@ fun CustomerLookup(navController: NavController, flag: String, modifier: Modifie
 
 @Composable
 fun AddCustomerDialog(
+    viewModel: CustomerViewModel = viewModel(),
     modifier: Modifier = Modifier,
     showDialog: Boolean,
     onDismissRequest: () -> Unit,
@@ -293,40 +294,44 @@ fun AddCustomerDialog(
             },
             confirmButton = {
                 Button(onClick = {
-                    val customerRef = db.collection("Customers").document()
+                    val phoneFlag = viewModel.checkPhone(phoneNumber)
+                    if (phoneFlag) {
+                        val customerRef = db.collection("Customers").document()
 
-                    val customer = hashMapOf(
-                        "id" to customerRef.id,
-                        "name" to name.trim().lowercase(),
-                        "phone" to phoneNumber,
-                        "address" to address,
-                        "lat" to lat,
-                        "long" to long
-                    )
-                    name = ""
-                    phoneNumber = ""
-                    address = ""
+                        val customer = hashMapOf(
+                            "id" to customerRef.id,
+                            "name" to name.trim().lowercase(),
+                            "phone" to phoneNumber,
+                            "address" to address,
+                            "lat" to lat,
+                            "long" to long
+                        )
+                        name = ""
+                        phoneNumber = ""
+                        address = ""
 
-                    customerRef.set(customer)
-                        .addOnSuccessListener {
-                            Log.d("Firestore", "Customer added w ID: ${customerRef.id}")
-                            onDismissRequest()
-                            Toast.makeText(
-                                context,
-                                "Customer Added Successfully",
-                                Toast.LENGTH_SHORT
-                            ).show()
-                        }
-                        .addOnFailureListener { e ->
-                            Log.w("Firestore", "Error adding customer", e)
-                            onDismissRequest()
-                            Toast.makeText(
-                                context,
-                                "Error Adding Customer",
-                                Toast.LENGTH_SHORT
-                            ).show()
+                        customerRef.set(customer)
+                            .addOnSuccessListener {
+                                Log.d("Firestore", "Customer added w ID: ${customerRef.id}")
+                                onDismissRequest()
+                                Toast.makeText(
+                                    context,
+                                    "Customer Added Successfully",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                            .addOnFailureListener { e ->
+                                Log.w("Firestore", "Error adding customer", e)
+                                onDismissRequest()
+                                Toast.makeText(
+                                    context,
+                                    "Error Adding Customer",
+                                    Toast.LENGTH_SHORT
+                                ).show()
 
-                        }
+                            }
+                    } else
+                        Toast.makeText(context, "Please enter a 10 digit number between 0-9", Toast.LENGTH_SHORT).show()
 
                 }) { Text("Add Customer") }
             },
@@ -489,17 +494,25 @@ fun LocationSearchField(
                                             Place.Field.LOCATION,
                                             Place.Field.FORMATTED_ADDRESS
                                         )
-                                        val fetchPlaceRequest = FetchPlaceRequest.newInstance(placeId, placeFields)
+                                        val fetchPlaceRequest =
+                                            FetchPlaceRequest.newInstance(placeId, placeFields)
 
 
                                         placesClient.fetchPlace(fetchPlaceRequest)
                                             .addOnSuccessListener { response ->
                                                 val place = response.place
-                                                Log.d("PlacesAPI", "Place details fetched: ${place.formattedAddress}, \nLatLng: ${place.location}, \nname: ${place.displayName}, \naddress:${selectedLoc}")
+                                                Log.d(
+                                                    "PlacesAPI",
+                                                    "Place details fetched: ${place.formattedAddress}, \nLatLng: ${place.location}, \nname: ${place.displayName}, \naddress:${selectedLoc}"
+                                                )
                                                 onPlaceSelected(place.location)
                                             }
                                             .addOnFailureListener { exception ->
-                                                Log.e("PlacesAPI", "Failed to fetch place details", exception)
+                                                Log.e(
+                                                    "PlacesAPI",
+                                                    "Failed to fetch place details",
+                                                    exception
+                                                )
                                                 onQueryChange("")
                                             }
 
@@ -676,10 +689,23 @@ class CustomerViewModel : ViewModel() {
     var searchResults = mutableStateOf<List<Customer>>(emptyList())
     private val db = Firebase.firestore
 
+    fun checkPhone(phoneNum: String): Boolean {
+        if (phoneNum.all { it.isDigit() }) {
+            if (phoneNum.length > 10 || phoneNum.length < 10)
+                return false
+            else
+                return true
+        } else
+            return false
+    }
+
     fun onSearchChange(query: String) {
         searchQuery = query
         if (query.isNotEmpty()) {
-            searchCustomers(query)
+            if (query.all { it.isDigit() })
+                searchNumbers(query)
+            else
+                searchCustomers(query)
         } else {
             searchResults.value = emptyList()
         }
@@ -690,6 +716,20 @@ class CustomerViewModel : ViewModel() {
             .orderBy("name")
             .startAt(query.lowercase())
             .endAt(query.lowercase() + "\uf8ff")
+            .get()
+            .addOnSuccessListener { snapshot ->
+                val customers = snapshot.documents.mapNotNull {
+                    it.toObject(Customer::class.java)
+                }
+                searchResults.value = customers
+            }
+    }
+
+    private fun searchNumbers(query: String) {
+        db.collection("Customers")
+            .orderBy("phone")
+            .startAt(query)
+            .endAt(query + "\uf8ff")
             .get()
             .addOnSuccessListener { snapshot ->
                 val customers = snapshot.documents.mapNotNull {
