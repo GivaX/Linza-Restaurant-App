@@ -1,6 +1,7 @@
 package com.example.linza_apps.ui.screens
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -14,6 +15,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
@@ -30,10 +32,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.linza_apps.R
+import com.example.linza_apps.navigation.Screen
 import com.example.linza_apps.ui.components.AppBar
 import com.example.linza_apps.ui.components.CustomTextField
 import com.example.linza_apps.ui.components.CustomerViewModel
@@ -83,25 +87,30 @@ fun ViewCustomersContent(
         )
         Column {
             DateTimeDisplay()
-            ViewCustomerBox(customerId)
+            ViewCustomerBox(customerId, navController)
         }
     }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun ViewCustomerBox(customerId: String, modifier: Modifier = Modifier) {
+fun ViewCustomerBox(
+    customerId: String,
+    navController: NavController,
+    modifier: Modifier = Modifier
+) {
     val viewModel: CustomerViewModel = viewModel()
     val cus by viewModel.getCustomerId(customerId).collectAsState(null)
     val orders by viewModel.getCustomerOrders(customerId).collectAsState(emptyList())
     val customer = cus
     var selectedOrder by remember { mutableStateOf<OrderItemsList?>(null) }
-
+    val context = LocalContext.current
     var showDialog by remember { mutableStateOf(false) }
+    var showPopup by remember { mutableStateOf(false) }
     var updateName by remember { mutableStateOf(customer?.name ?: "") }
     var updateAddress by remember { mutableStateOf(customer?.address ?: "") }
     var updatePhone by remember { mutableStateOf(customer?.phone ?: "") }
-    var latLng by remember { mutableStateOf(LatLng(6.9691122,79.9206079)) }
+    var latLng by remember { mutableStateOf(LatLng(6.9691122, 79.9206079)) }
 
     if (showDialog) {
         AlertDialog(
@@ -154,7 +163,69 @@ fun ViewCustomerBox(customerId: String, modifier: Modifier = Modifier) {
                     showDialog = false
                 }) { Text("Save") }
             },
-            dismissButton = { TextButton(onClick = { showDialog = false }) { Text("Cancel") } }
+            dismissButton = {
+                Row {
+                    Button(
+                        onClick = {
+                            showDialog = false
+                            showPopup = true
+                        },
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Red.copy(alpha = 0.4f),
+                            contentColor = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    ) { Text("Delete") }
+                    TextButton(onClick = {
+                        showDialog = false
+                    }) {
+                        Text("Cancel")
+                    }
+                }
+
+            }
+        )
+    }
+
+    if (showPopup) {
+        AlertDialog(
+            onDismissRequest = { showPopup = false },
+            title = { Text("Are you sure you want to delete this customer?") },
+            text = { Text(customer!!.name) },
+            confirmButton = {
+                Button(onClick = {
+                    val customerRef =
+                        Firebase.firestore.collection("Customers").document(customerId)
+
+                    customerRef.delete()
+                        .addOnSuccessListener {
+                            Toast.makeText(
+                                context, "Customer ${customer!!.name} Deleted", Toast.LENGTH_SHORT
+                            ).show()
+                            navController.navigate(Screen.Customers.route) {
+                                popUpTo(Screen.Home.route) {
+                                    saveState = true
+                                    inclusive = false
+                                }
+                                launchSingleTop = true
+                            }
+                        }
+                        .addOnFailureListener {
+                            Toast.makeText(
+                                context,
+                                "Error deleting customer ${customer!!.name}",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    showPopup = false
+                })
+                { Text("Yes") }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick =
+                        { showPopup = false })
+                { Text("No") }
+            }
         )
     }
 
