@@ -9,21 +9,6 @@ import android.util.Log
 import android.widget.Toast
 import com.example.linza_apps.MyApp
 
-//class UsbReceiver : BroadcastReceiver() {
-//    override fun onReceive(context: Context, intent: Intent) {
-//        if (intent.action == "com.example.linza_apps.USB_PERMISSION") {
-//            val device = intent.getParcelableExtra<UsbDevice>(UsbManager.EXTRA_DEVICE)
-//            if (intent.getBooleanExtra(UsbManager.EXTRA_PERMISSION_GRANTED, false)) {
-//                if (device != null) {
-//                    Log.d("Printer", "Permission granted for ${device.deviceName}")
-//                }
-//            } else {
-//                Log.d("Printer", "Permission denied for ${device?.deviceName}")
-//            }
-//        }
-//    }
-//}
-
 class UsbReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
         Log.d("Printer", "UsbReceiver: Action received - ${intent.action}")
